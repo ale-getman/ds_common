@@ -48,6 +48,10 @@ class DSRemoteConfig {
       try {
         await _remoteConfig.fetchAndActivate();
         _isFullyInitialized = true;
+        DSMetrica.addPersistentAttrs(_remoteConfig.getAll()
+            .map((key, value) => MapEntry(key, value.asString()))
+          ..removeWhere((k, v) => !k.startsWith('exp_'))
+        );
       } catch (e, stack) {
         Fimber.e('$e', stacktrace: stack);
       }

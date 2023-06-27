@@ -71,7 +71,7 @@ abstract class DSFimberService {
     });
   }
 
-  Future<void> initFimberInIsolate() async {
+  static Future<void> initFimberInIsolate() async {
     if (_isInitializedInMain) {
       Fimber.e('Fimber is already initialized', stacktrace: StackTrace.current);
       return;

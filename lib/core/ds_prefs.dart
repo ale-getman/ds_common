@@ -30,4 +30,6 @@ abstract class DSPrefs {
   void setAppLastUsed(DateTime value) =>
       unawaited(internal.setInt('app_last_used', value.millisecondsSinceEpoch ~/ 1000));
 
+  bool isYandexDeviceIdSent() => internal.getBool('yandexDeviceIdSent') ?? false;
+  void setYandexDeviceIdSent(bool value) => internal.setBool('yandexDeviceIdSent', value);
 }

@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
+import 'package:decimal/decimal.dart' as d;
 import 'package:ds_common/core/ds_constants.dart';
 import 'package:fimber/fimber.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:userx_flutter/userx_flutter.dart';
@@ -12,6 +14,8 @@ import 'ds_prefs.dart';
 import 'ds_remote_config.dart';
 
 typedef AdRevenue = m.AdRevenue;
+typedef AdType = m.AdType;
+typedef Decimal = d.Decimal;
 typedef UserProfile = m.UserProfile;
 typedef StringAttribute = m.StringAttribute;
 typedef AppMetricaErrorDescription = m.AppMetricaErrorDescription;
@@ -20,6 +24,8 @@ typedef AppMetricaErrorDescription = m.AppMetricaErrorDescription;
 /// await DSMetrica.init()
 /// at the app start
 abstract class DSMetrica {
+  static const _firstEventParam = 'ds_metrica_first_session_event';
+
   static var _eventId = 0;
   static var _userXKey = '';
   static var _yandexId = '';
@@ -54,6 +60,14 @@ abstract class DSMetrica {
     _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
     Fimber.d('yandexId=$_yandexId');
     _isInitialized = true;
+  }
+
+  /// Send only one event per app lifetime
+  static void reportFirstEvent(String eventName, {Map<String, Object>? attributes, int stackSkip = 1}) {
+    final firstEvent = DSPrefs.I.internal.getString(_firstEventParam);
+    if (firstEvent != null) return;
+    DSPrefs.I.internal.setString(_firstEventParam, eventName);
+    reportEventWithMap('$eventName (first event)', attributes, stackSkip: stackSkip + 1);
   }
 
   static void reportEvent(String eventName, {
@@ -163,5 +177,13 @@ abstract class DSMetrica {
 
   static void addPersistentAttrs(Map<String, Object> attrs) {
     _persistentAttrs.addAll(attrs);
+  }
+
+  static Future<void> sendYandexDeviceId() async {
+    if (DSPrefs.I.isYandexDeviceIdSent()) return;
+    assert(yandexId.isNotEmpty);
+    await FirebaseAnalytics.instance.setUserProperty(name: 'appmetrica_id', value: yandexId);
+    await reportEventWithMap('set appmetrica_id', {'appmetrica_id': yandexId});
+    DSPrefs.I.setYandexDeviceIdSent(true);
   }
 }

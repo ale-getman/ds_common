@@ -17,8 +17,10 @@ dependencies:
   shared_preferences: ^2.0.17
   userx_flutter: ^1.0.17
   appmetrica_plugin: ^1.0.1
-  package_info: ^2.0.2
+  decimal: ^2.3.0
+  package_info_plus: ^1.4.2
   firebase_remote_config: ^3.0.0
+  firebase_analytics: ^10.0.3
 
 dev_dependencies:
   flutter_test:
