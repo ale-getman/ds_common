@@ -12,7 +12,7 @@ import 'ds_fimber_trees.dart';
 abstract class DSFimberService {
   DSFimberService._();
 
-  static const String _portName = 'lotus_fimber';
+  static const String _portName = 'ds_fimber_service';
 
   static var _isInitializedInMain = false;
   static var _isInitializedInIsolate = false;
