@@ -5,6 +5,7 @@ import 'package:decimal/decimal.dart' as d;
 import 'package:ds_common/core/ds_constants.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:userx_flutter/userx_flutter.dart';

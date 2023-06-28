@@ -1,3 +1,2 @@
-## 0.0.1
-
-* TODO: Describe initial release.
+## 0.1.0
+- Implements Metrica, Firebase Crashlytics, RemoteConfig, Fimber and Shared Preferences support

@@ -1,11 +1,11 @@
 name: ds_common
 description: Common library for sect.dev (https://sect.dev/)
-version: 0.0.1
+version: 0.1.0
 repository: https://github.com/al-tush/ds_common
 
 environment:
-  sdk: '>=2.19.6 <3.0.0'
-  flutter: ">=1.17.0"
+  sdk: ">=2.17.6 <4.0.0"
+  flutter: ">=3.0.0"
 
 dependencies:
   flutter:
