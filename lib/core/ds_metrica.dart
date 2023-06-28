@@ -58,8 +58,9 @@ abstract class DSMetrica {
       await m.AppMetrica.pauseSession();
     }
     _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
-    Fimber.d('yandexId=$_yandexId');
     _isInitialized = true;
+    Fimber.d('yandexId=$yandexId');
+    await FirebaseCrashlytics.instance.setUserIdentifier(yandexId);
   }
 
   /// Send only one event per app lifetime
