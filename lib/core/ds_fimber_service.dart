@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:ds_common/core/ds_metrica.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -54,6 +56,7 @@ abstract class DSFimberService {
     if (kDebugMode) {
       await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
     }
+    unawaited(FirebaseCrashlytics.instance.setUserIdentifier(DSMetrica.yandexId));
 
     IsolateNameServer.removePortNameMapping(_portName);
     final port = ReceivePort(_portName);
