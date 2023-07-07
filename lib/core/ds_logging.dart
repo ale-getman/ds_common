@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:fimber/fimber.dart';
 import 'package:flutter/foundation.dart';
@@ -99,6 +100,8 @@ class DSAnsiColor {
 
   @override
   String toString() {
+    if (Platform.isIOS) return '';
+
     if (fg != null) {
       return '${ansiEsc}38;5;${fg}m';
     } else if (bg != null) {
@@ -109,7 +112,7 @@ class DSAnsiColor {
   }
 
   String call(String msg) {
-    if (color) {
+    if (color && !Platform.isIOS) {
       return '$this$msg$ansiDefault';
     } else {
       return msg;
@@ -121,10 +124,10 @@ class DSAnsiColor {
   DSAnsiColor toBg() => DSAnsiColor.bg(fg);
 
   /// Defaults the terminal's foreground color without altering the background.
-  String get resetForeground => color ? '${ansiEsc}39m' : '';
+  String get resetForeground => color && !Platform.isIOS ? '${ansiEsc}39m' : '';
 
   /// Defaults the terminal's background color without altering the foreground.
-  String get resetBackground => color ? '${ansiEsc}49m' : '';
+  String get resetBackground => color && !Platform.isIOS ? '${ansiEsc}49m' : '';
 
   static int grey(double level) => 232 + (level.clamp(0.0, 1.0) * 23).round();
 }
