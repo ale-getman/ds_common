@@ -1,3 +1,6 @@
+## 0.1.3
+- disable text highlighting for iOS logging
+
 ## 0.1.2
 - dependencies updated
 
