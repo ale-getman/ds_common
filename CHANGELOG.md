@@ -1,3 +1,6 @@
+## 0.1.4
+- DSPrefs now is a ChangeNotifier
+
 ## 0.1.3
 - disable text highlighting for iOS logging
 
