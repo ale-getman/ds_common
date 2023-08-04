@@ -44,6 +44,9 @@ abstract class DSMetrica {
     return _yandexId;
   }
 
+  /// Initialize DSMetrica. Must call before the first use
+  /// [yandexKey] - API key of Yandex App Metrica
+  /// [userXKey] - API key of UserX
   static Future<void> init({
     required String yandexKey,
     required String userXKey,
@@ -74,11 +77,13 @@ abstract class DSMetrica {
     reportEventWithMap('$eventName (first event)', attributes, stackSkip: stackSkip + 1);
   }
 
+  /// Report event to AppMetrica and UserX (disabled in debug mode)
   static void reportEvent(String eventName, {
     Map<String, Object>? attributes,
     int stackSkip = 1,
   }) => reportEventWithMap(eventName, attributes, stackSkip: stackSkip + 1);
 
+  /// Report sceen change to implement Heatmaps functionality in UserX
   static Future<void> reportScreenOpened(String screenName) async {
     if (_previousScreenName == screenName) return;
     _previousScreenName = screenName;
@@ -86,6 +91,7 @@ abstract class DSMetrica {
     await _channel.invokeMethod('setUserXScreenName', screenName);
   }
 
+  /// Call this method on app start and [AppLifecycleState.resumed]
   static void tryUpdateAppSessionId() {
     final appSuspended = DateTime.now().difference(DSPrefs.I.getAppLastUsed());
     if (appSuspended.inMinutes >= 1) {
@@ -103,6 +109,7 @@ abstract class DSMetrica {
 
   static var _reportEventError = false;
 
+  /// Report event to AppMetrica and UserX (disabled in debug mode)
   static Future<void> reportEventWithMap(String eventName,
       Map<String, Object>? attributes,{
         int stackSkip = 1,
@@ -134,13 +141,17 @@ abstract class DSMetrica {
     }
   }
 
+  /// AppMetrica wrapper
   static Future<void> reportAdRevenue(AdRevenue revenue) => m.AppMetrica.reportAdRevenue(revenue);
 
+  /// AppMetrica wrapper
   static Future<void> reportUserProfile(UserProfile userProfile) => m.AppMetrica.reportUserProfile(userProfile);
 
+  /// AppMetrica wrapper
   static Future<void> reportError({String? message, AppMetricaErrorDescription? errorDescription}) =>
       m.AppMetrica.reportError(message: message, errorDescription: errorDescription);
 
+  /// Initialize UserX if it is allowed by RemoteConfig
   static Future<void> tryStartUserX() async {
     assert(DSConstants.isInitialized);
     assert(DSRemoteConfig.I.isInitialized);
@@ -169,6 +180,7 @@ abstract class DSMetrica {
     }
   }
 
+  /// Initialize UserX
   static Future<void> startUserX() async {
     final sessions = DSRemoteConfig.I.getUserXSessions();
     if (sessions != 0 && sessions < DSPrefs.I.getSessionId()) {
@@ -181,15 +193,18 @@ abstract class DSMetrica {
     _userXRunning = true;
   }
 
+  /// Stop UserX
   static Future<void> stopUserX() async {
     await UserX.stopScreenRecording();
     _userXRunning = false;
   }
 
+  /// Save attributes to send it in every [reportEvent]
   static void addPersistentAttrs(Map<String, Object> attrs) {
     _persistentAttrs.addAll(attrs);
   }
 
+  /// Send yandex Id to Firebase if it was not send
   static Future<void> sendYandexDeviceId() async {
     if (DSPrefs.I.isYandexDeviceIdSent()) return;
     assert(yandexId.isNotEmpty);
