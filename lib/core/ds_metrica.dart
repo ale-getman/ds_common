@@ -25,7 +25,7 @@ typedef AppMetricaErrorDescription = m.AppMetricaErrorDescription;
 /// await DSMetrica.init()
 /// at the app start
 abstract class DSMetrica {
-  static final _channel = const MethodChannel('pro.altush.ds_common/metrica', StandardMethodCodec());
+  static const _channel = MethodChannel('pro.altush.ds_common/metrica', StandardMethodCodec());
 
   static const _firstEventParam = 'ds_metrica_first_session_event';
 
