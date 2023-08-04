@@ -1,3 +1,8 @@
+## 0.1.5
+- add reportScreenOpened method
+- update AppMetrica plugin min version
+- Add some documentation
+
 ## 0.1.4
 - DSPrefs now is a ChangeNotifier
 
