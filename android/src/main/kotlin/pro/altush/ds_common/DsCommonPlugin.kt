@@ -3,16 +3,14 @@ package pro.altush.ds_common
 import androidx.annotation.NonNull
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
+import pro.userx.UserX
 
 /** DsCommonPlugin */
 class DsCommonPlugin: FlutterPlugin {
 
     private val channeMetricaName = "pro.altush.ds_common/metrica"
-    private var channel: MethodChannel
+    private lateinit var channel: MethodChannel
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, channeMetricaName)
