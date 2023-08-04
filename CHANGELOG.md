@@ -1,3 +1,6 @@
+## 0.1.6
+- build fixed
+
 ## 0.1.5
 - add reportScreenOpened method
 - update AppMetrica plugin min version
