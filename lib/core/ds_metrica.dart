@@ -6,6 +6,7 @@ import 'package:ds_common/core/ds_constants.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:userx_flutter/userx_flutter.dart';
 
@@ -24,12 +25,15 @@ typedef AppMetricaErrorDescription = m.AppMetricaErrorDescription;
 /// await DSMetrica.init()
 /// at the app start
 abstract class DSMetrica {
+  static final _channel = const MethodChannel('pro.altush.ds_common/metrica', StandardMethodCodec());
+
   static const _firstEventParam = 'ds_metrica_first_session_event';
 
   static var _eventId = 0;
   static var _userXKey = '';
   static var _yandexId = '';
   static var _userXRunning = false;
+  static var _previousScreenName = '';
 
   static final _persistentAttrs = <String, Object>{};
 
@@ -74,6 +78,13 @@ abstract class DSMetrica {
     Map<String, Object>? attributes,
     int stackSkip = 1,
   }) => reportEventWithMap(eventName, attributes, stackSkip: stackSkip + 1);
+
+  static Future<void> reportScreenOpened(String screenName) async {
+    if (_previousScreenName == screenName) return;
+    _previousScreenName = screenName;
+    reportEvent('$screenName, screen opened');
+    await _channel.invokeMethod('setUserXScreenName', screenName);
+  }
 
   static void tryUpdateAppSessionId() {
     final appSuspended = DateTime.now().difference(DSPrefs.I.getAppLastUsed());
