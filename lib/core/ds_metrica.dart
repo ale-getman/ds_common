@@ -32,6 +32,7 @@ abstract class DSMetrica {
   static var _eventId = 0;
   static var _userXKey = '';
   static var _yandexId = '';
+  static late final bool _debugModeSend;
   static var _userXRunning = false;
   static var _previousScreenName = '';
 
@@ -47,21 +48,25 @@ abstract class DSMetrica {
   /// Initialize DSMetrica. Must call before the first use
   /// [yandexKey] - API key of Yandex App Metrica
   /// [userXKey] - API key of UserX
+  /// [forceSend] - send events in debug mode too
   static Future<void> init({
     required String yandexKey,
     required String userXKey,
+    bool debugModeSend = false,
   }) async {
     if (_isInitialized) {
       Fimber.e('DSMetrica is already initialised', stacktrace: StackTrace.current);
       return;
     }
 
+    _userXKey = userXKey;
+    _debugModeSend = debugModeSend;
+
     WidgetsFlutterBinding.ensureInitialized();
     await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
-      sessionsAutoTracking: !kDebugMode,
+      sessionsAutoTracking: !kDebugMode || _debugModeSend,
     ));
-    _userXKey = userXKey;
-    if (kDebugMode) {
+    if (kDebugMode && !_debugModeSend) {
       await m.AppMetrica.pauseSession();
     }
     _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
@@ -131,7 +136,7 @@ abstract class DSMetrica {
 
       logDebug('$eventName $attrs', stackSkip: stackSkip, stackDeep: 5);
 
-      if (kDebugMode) return;
+      if (kDebugMode && !_debugModeSend) return;
       await m.AppMetrica.reportEventWithMap(eventName, attrs);
     } catch (e, stack) {
       if (!_reportEventError) {
@@ -156,7 +161,7 @@ abstract class DSMetrica {
     assert(DSConstants.isInitialized);
     assert(DSRemoteConfig.I.isInitialized);
 
-    if (kDebugMode) return;
+    if (kDebugMode && !_debugModeSend) return;
 
     if (DSConstants.I.isInternalVersion) {
       await startUserX();
