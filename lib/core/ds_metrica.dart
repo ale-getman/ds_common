@@ -37,7 +37,7 @@ abstract class DSMetrica {
   static var _previousScreenName = '';
 
   static final _persistentAttrs = <String, Object>{};
-
+  static Map<String, Object> Function()? _persistentAttrsHandler;
   static var _isInitialized = false;
 
   static String get yandexId {
@@ -126,6 +126,9 @@ abstract class DSMetrica {
         attrs.addAll(attributes);
       }
       attrs.addAll(_persistentAttrs);
+
+      attrs.addAll(_persistentAttrsHandler?.call() ?? {});
+
       DSPrefs.I.setAppLastUsed(DateTime.now());
       final sessionId = DSPrefs.I.getSessionId();
 
@@ -207,6 +210,11 @@ abstract class DSMetrica {
   /// Save attributes to send it in every [reportEvent]
   static void addPersistentAttrs(Map<String, Object> attrs) {
     _persistentAttrs.addAll(attrs);
+  }
+
+  /// Calculate attributes to send it in every [reportEvent]
+  static void setPersistentAttrsHandler(Map<String, Object> Function() handler) {
+    _persistentAttrsHandler = handler;
   }
 
   /// Send yandex Id to Firebase if it was not send
