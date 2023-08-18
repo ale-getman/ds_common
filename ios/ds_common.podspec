@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'ds_common'
-  s.version          = '0.0.1'
+  s.version          = '0.0.2'
   s.summary          = 'Common library for sect.dev (https://sect.dev/)'
   s.description      = <<-DESC
 Common library for sect.dev (https://sect.dev/)
@@ -15,7 +15,6 @@ Common library for sect.dev (https://sect.dev/)
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'UserX/Fat'
   s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.

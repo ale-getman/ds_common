@@ -6,7 +6,6 @@ import 'package:ds_common/core/ds_constants.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:userx_flutter/userx_flutter.dart';
 
@@ -25,8 +24,6 @@ typedef AppMetricaErrorDescription = m.AppMetricaErrorDescription;
 /// await DSMetrica.init()
 /// at the app start
 abstract class DSMetrica {
-  static const _channel = MethodChannel('pro.altush.ds_common/metrica', StandardMethodCodec());
-
   static const _firstEventParam = 'ds_metrica_first_session_event';
 
   static var _eventId = 0;
@@ -93,7 +90,7 @@ abstract class DSMetrica {
     if (_previousScreenName == screenName) return;
     _previousScreenName = screenName;
     reportEvent('$screenName, screen opened');
-    await _channel.invokeMethod('setUserXScreenName', screenName);
+    UserX.addScreenName(screenName);
   }
 
   /// Call this method on app start and [AppLifecycleState.resumed]
