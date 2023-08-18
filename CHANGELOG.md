@@ -1,10 +1,14 @@
+## 0.1.7
+- add optional debug mode sending to DSMetrica
+- add dynamic PersistentAttrs (DSMetrica.setPersistentAttrsHandler)
+
 ## 0.1.6
 - build fixed
 
 ## 0.1.5
 - add reportScreenOpened method
 - update AppMetrica plugin min version
-- Add some documentation
+- add some documentation
 
 ## 0.1.4
 - DSPrefs now is a ChangeNotifier
@@ -19,4 +23,4 @@
 - DSMetrica initialization fixed
 
 ## 0.1.0
-- Implements Metrica, Firebase Crashlytics, RemoteConfig, Fimber and Shared Preferences support
+- implements Metrica, Firebase Crashlytics, RemoteConfig, Fimber and Shared Preferences support
