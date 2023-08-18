@@ -1,3 +1,6 @@
+## 0.1.8
+- update UserX to 1.1.0 (previous versions of ds_common are incompatible with UserX 1.1.0)
+
 ## 0.1.7
 - add optional debug mode sending to DSMetrica
 - add dynamic PersistentAttrs (DSMetrica.setPersistentAttrsHandler)
