@@ -45,11 +45,16 @@ Future<void> catchAsWarningAsync(Future<void> Function() func) async {
 }
 
 void unawaitedCatch(Future<void> Function() func) {
+  final hostStack = StackTrace.current;
   unawaited(() async {
     try {
       await func();
     } catch (e, stack) {
-      Fimber.e('$e', stacktrace: stack);
+      final host = LimitedStackTrace(
+        stackTrace: hostStack,
+        skipFirst: 1,
+      );
+      Fimber.e('$e', stacktrace: StackTrace.fromString('$stack$host'));
     }
   } ());
 }
