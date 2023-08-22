@@ -1,3 +1,6 @@
+## 0.1.9
+- improve stack logging for unawaitedCatch
+
 ## 0.1.8
 - update UserX to 1.1.0 (previous versions of ds_common are incompatible with UserX 1.1.0)
 
