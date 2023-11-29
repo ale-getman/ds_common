@@ -1,3 +1,6 @@
+## 0.1.10
+- add user_time attribute to reportEvent
+
 ## 0.1.9
 - improve stack logging for unawaitedCatch
 
