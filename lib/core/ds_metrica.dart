@@ -131,6 +131,7 @@ abstract class DSMetrica {
 
       attrs['session_id'] = sessionId;
       attrs['event_id'] = _eventId;
+      attrs['user_time'] = DateTime.now().toIso8601String();
 
       UserX.addEvent(eventName, attrs.map<String, String>((key, value) => MapEntry(key, '$value')));
 
