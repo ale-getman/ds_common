@@ -66,9 +66,12 @@ abstract class DSMetrica {
     if (kDebugMode && !_debugModeSend) {
       await m.AppMetrica.pauseSession();
     }
-    _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
     _isInitialized = true;
-    Fimber.d('yandexId=$yandexId');
+    // allow to first start without internet connection
+    unawaited(() async {
+      _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
+      Fimber.d('yandexId=$yandexId');
+    }());
   }
 
   /// Send only one event per app lifetime
