@@ -1,3 +1,6 @@
+## 0.1.11
+- fixed first start with no internet connection
+
 ## 0.1.10
 - add user_time attribute to reportEvent
 
