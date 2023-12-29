@@ -1,3 +1,7 @@
+## 0.1.12
+- add web support
+- add "let" extension (like in Kotlin)
+
 ## 0.1.11
 - fixed first start with no internet connection
 
