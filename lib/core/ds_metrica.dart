@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
 import 'package:decimal/decimal.dart' as d;
@@ -60,18 +61,25 @@ abstract class DSMetrica {
     _debugModeSend = debugModeSend;
 
     WidgetsFlutterBinding.ensureInitialized();
-    await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
-      sessionsAutoTracking: !kDebugMode || _debugModeSend,
-    ));
-    if (kDebugMode && !_debugModeSend) {
-      await m.AppMetrica.pauseSession();
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
+        sessionsAutoTracking: !kDebugMode || _debugModeSend,
+      ));
+      if (kDebugMode && !_debugModeSend) {
+        await m.AppMetrica.pauseSession();
+      }
+    } else {
+      assert(yandexKey == '', 'yandexKey supports mobile platform only. Remove yandexKey id');
+      assert(userXKey == '', 'userXKey supports mobile platform only. Remove userXKey id');
     }
     _isInitialized = true;
     // allow to first start without internet connection
-    unawaited(() async {
-      _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
-      Fimber.d('yandexId=$yandexId');
-    }());
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      unawaited(() async {
+        _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
+        Fimber.d('yandexId=$yandexId');
+      }());
+    }
   }
 
   /// Send only one event per app lifetime
@@ -119,6 +127,8 @@ abstract class DSMetrica {
       Map<String, Object>? attributes,{
         int stackSkip = 1,
       }) async {
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
+
     _eventId++;
     try {
       final attrs = <String, Object>{};
@@ -166,6 +176,7 @@ abstract class DSMetrica {
     assert(DSRemoteConfig.I.isInitialized);
 
     if (kDebugMode && !_debugModeSend) return;
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
 
     if (DSConstants.I.isInternalVersion) {
       await startUserX();
@@ -191,6 +202,8 @@ abstract class DSMetrica {
 
   /// Initialize UserX
   static Future<void> startUserX() async {
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
+
     final sessions = DSRemoteConfig.I.getUserXSessions();
     if (sessions != 0 && sessions < DSPrefs.I.getSessionId()) {
       return;
@@ -204,6 +217,7 @@ abstract class DSMetrica {
 
   /// Stop UserX
   static Future<void> stopUserX() async {
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
     await UserX.stopScreenRecording();
     _userXRunning = false;
   }
@@ -220,6 +234,8 @@ abstract class DSMetrica {
 
   /// Send yandex Id to Firebase if it was not send
   static Future<void> sendYandexDeviceId() async {
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
+
     if (DSPrefs.I.isYandexDeviceIdSent()) return;
     assert(yandexId.isNotEmpty);
     await FirebaseAnalytics.instance.setUserProperty(name: 'appmetrica_id', value: yandexId);
