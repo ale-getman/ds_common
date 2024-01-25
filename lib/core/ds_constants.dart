@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:fimber/fimber.dart';
+import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'ds_logging.dart';
@@ -16,16 +17,22 @@ class DSConstants {
     return _instance!;
   }
 
+  @protected
+  @mustCallSuper
+  Future<void> internalInit() async {
+    packageInfo = await PackageInfo.fromPlatform();
+    // 3-number builds are internal (ex 1.4.12)
+    if (packageInfo.version.split('.').length == 3) {
+      logDebug('INTERNAL VERSION: ${packageInfo.version}');
+      _isInternalVersion = true;
+    }
+  }
+
   DSConstants({required VoidCallback? then}) {
     assert(_instance == null);
     _instance = this;
     unawaited(() async {
-      packageInfo = await PackageInfo.fromPlatform();
-      // 3-number builds are internal (ex 1.4.12)
-      if (packageInfo.version.split('.').length == 3) {
-        logDebug('INTERNAL VERSION: ${packageInfo.version}');
-        _isInternalVersion = true;
-      }
+      await internalInit();
       _isInitialized = true;
       then?.call();
     }());
