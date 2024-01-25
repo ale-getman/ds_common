@@ -1,3 +1,6 @@
+## 0.1.13
+- add method internalInit to DSConstants
+
 ## 0.1.12
 - add web support
 - add "let" extension (like in Kotlin)
