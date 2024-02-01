@@ -41,6 +41,18 @@ class DSConstants {
   var _isInitialized = false;
   var _isInternalVersion = false;
 
+  Future<void> waitForInit({final maxWait = const Duration(seconds: 5)}) async {
+    final start = DateTime.now();
+    while (true) {
+      if (isInitialized) break;
+      if (DateTime.now().difference(start) >= maxWait) {
+        Fimber.e('Failed to wait DSConstants', stacktrace: StackTrace.current);
+        break;
+      }
+      await Future.delayed(const Duration(milliseconds: 10));
+    }
+  }
+
   bool get isInternalVersion {
     if (!_isInitialized) {
       const err = 'Wait for init';
