@@ -97,10 +97,10 @@ abstract class DSMetrica {
   }) => reportEventWithMap(eventName, attributes, stackSkip: stackSkip + 1);
 
   /// Report sceen change to implement Heatmaps functionality in UserX
-  static Future<void> reportScreenOpened(String screenName) async {
+  static Future<void> reportScreenOpened(String screenName, {Map<String, Object>? attributes}) async {
     if (_previousScreenName == screenName) return;
     _previousScreenName = screenName;
-    reportEvent('$screenName, screen opened');
+    reportEvent('$screenName, screen opened', attributes: attributes);
     UserX.addScreenName(screenName);
   }
 
