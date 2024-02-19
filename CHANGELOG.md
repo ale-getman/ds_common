@@ -1,3 +1,6 @@
+## 0.1.14
+- add DSLimitiedText widget
+
 ## 0.1.13
 - add method internalInit to DSConstants
 
