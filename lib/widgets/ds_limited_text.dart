@@ -1,73 +1,63 @@
 import 'dart:math';
 
 import 'package:ds_common/core/ds_primitives.dart';
+import 'package:ds_common/widgets/ds_limited_block.dart';
 import 'package:flutter/material.dart';
 
-class DSLimitedText extends StatefulWidget {
+class DSLimitedText extends StatelessWidget {
   final String text;
   final TextAlign textAlign;
   final TextStyle style;
-  final double maxHeight;
-  final double decreaseStep;
+  final double? maxHeight;
   final double minScale;
+  final int groupId;
 
   const DSLimitedText(this.text, {
     super.key,
     required this.textAlign,
     required this.style,
-    required this.maxHeight,
-    this.decreaseStep = 0.03,
+    this.maxHeight,
     this.minScale = 0.3,
-  }) : assert(minScale > 0),
-        assert(decreaseStep > 0 && decreaseStep < 1);
-
-  @override
-  State<DSLimitedText> createState() => _DSLimitedTextState();
-}
-
-class _DSLimitedTextState extends State<DSLimitedText> {
-  double? _scale;
-
-  @override
-  void didUpdateWidget(covariant DSLimitedText oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _scale = null;
-  }
+    this.groupId = -1,
+  }) : assert(minScale > 0);
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (_scale == null) {
-          _scale = 1;
-          while (_scale! > widget.minScale) {
+        return DSLimitedBlock(
+          groupId: -1,
+          groupMaxHeight: maxHeight ?? constraints.maxHeight,
+          minScale: minScale,
+          calcHeight: (context, screenWidth, scale) {
             final textSpan = TextSpan(
-              text: widget.text,
-              style: widget.style.copyWith(
-                fontSize: (widget.style.fontSize ?? 14) * _scale!,
-                height: widget.style.height?.let((v) => (v - 1) * _scale! + 1),
+              text: text,
+              style: style.copyWith(
+                fontSize: (style.fontSize ?? 14) * scale,
+                height: style.height?.let((v) => (v - 1) * scale + 1),
               ),
             );
             final tp = TextPainter(
-                text: textSpan,
-                textDirection: TextDirection.ltr,
+              text: textSpan,
+              textDirection: TextDirection.ltr,
             );
             tp.layout(maxWidth: constraints.maxWidth);
-            if (tp.height <= min(widget.maxHeight, constraints.maxHeight)) break;
-            _scale = _scale! - widget.decreaseStep;
-          }
-        }
-        return RichText(
-          textAlign: widget.textAlign,
-          text: TextSpan(
-            text: widget.text,
-            style: widget.style.copyWith(
-              fontSize: (widget.style.fontSize ?? 14) * _scale!,
-              height: widget.style.height?.let((v) => (v - 1) * _scale! + 1),
-            ),
-          ),
+            return tp.height;
+          },
+          builder: (context, scale) {
+            return RichText(
+              textAlign: textAlign,
+              text: TextSpan(
+                text: text,
+                style: style.copyWith(
+                  fontSize: (style.fontSize ?? 14) * scale,
+                  height: style.height?.let((v) => (v - 1) * scale + 1),
+                ),
+              ),
+            );
+          },
         );
-      },
-    );
+      }
+        );
   }
 }
