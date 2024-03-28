@@ -40,9 +40,11 @@ class _DSLimitedBlockState extends State<DSLimitedBlock> {
     final group = _groups[widget.groupId];
     if (group == null) return;
     group.scale = 0;
-    for (final e in group.states) {
-      e.setState(() {});
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      for (final e in group.states) {
+        e.setState(() {});
+      }
+    });
   }
 
   @override
@@ -104,6 +106,7 @@ class _DSLimitedBlockState extends State<DSLimitedBlock> {
         });
         if (height <= maxHeight) break;
         _localScale /= sqrt(height / maxHeight);
+        _localScale -= 0.001;
       }
       group?.scale = _localScale;
     }

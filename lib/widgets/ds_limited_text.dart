@@ -9,6 +9,7 @@ class DSLimitedText extends StatelessWidget {
   final TextAlign textAlign;
   final TextStyle style;
   final double? maxHeight;
+  final double marginHeight;
   final double minScale;
   final int groupId;
 
@@ -17,6 +18,7 @@ class DSLimitedText extends StatelessWidget {
     required this.textAlign,
     required this.style,
     this.maxHeight,
+    this.marginHeight = 0,
     this.minScale = 0.3,
     this.groupId = -1,
   }) : assert(minScale > 0);
@@ -26,7 +28,7 @@ class DSLimitedText extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         return DSLimitedBlock(
-          groupId: -1,
+          groupId: groupId,
           groupMaxHeight: maxHeight ?? constraints.maxHeight,
           minScale: minScale,
           calcHeight: (context, screenWidth, scale) {
@@ -42,7 +44,7 @@ class DSLimitedText extends StatelessWidget {
               textDirection: TextDirection.ltr,
             );
             tp.layout(maxWidth: constraints.maxWidth);
-            return tp.height;
+            return tp.height + marginHeight * scale;
           },
           builder: (context, scale) {
             return RichText(
@@ -57,7 +59,7 @@ class DSLimitedText extends StatelessWidget {
             );
           },
         );
-      }
-        );
+      },
+    );
   }
 }
