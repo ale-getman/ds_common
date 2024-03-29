@@ -92,9 +92,11 @@ abstract class DSMetrica {
 
   /// Report event to AppMetrica and UserX (disabled in debug mode)
   static void reportEvent(String eventName, {
+    bool fbSend = false,
     Map<String, Object>? attributes,
+    Map<String, Object>? fbAttributes,
     int stackSkip = 1,
-  }) => reportEventWithMap(eventName, attributes, stackSkip: stackSkip + 1);
+  }) => reportEventWithMap(eventName, fbSend: fbSend, attributes, fbAttributes: fbAttributes, stackSkip: stackSkip + 1);
 
   /// Report sceen change to implement Heatmaps functionality in UserX
   static Future<void> reportScreenOpened(String screenName, {Map<String, Object>? attributes}) async {
@@ -121,37 +123,65 @@ abstract class DSMetrica {
   }
 
   static var _reportEventError = false;
+  static var _reportEventErrorFB = false;
 
   /// Report event to AppMetrica and UserX (disabled in debug mode)
   static Future<void> reportEventWithMap(String eventName,
       Map<String, Object>? attributes,{
+        bool fbSend = false,
+        Map<String, Object>? fbAttributes,
         int stackSkip = 1,
       }) async {
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
 
     _eventId++;
     try {
-      final attrs = <String, Object>{};
-      if (attributes != null) {
-        attrs.addAll(attributes);
-      }
-      attrs.addAll(_persistentAttrs);
+      final baseAttrs = <String, Object>{};
+      baseAttrs.addAll(_persistentAttrs);
 
-      attrs.addAll(_persistentAttrsHandler?.call() ?? {});
+      baseAttrs.addAll(_persistentAttrsHandler?.call() ?? {});
 
       DSPrefs.I.setAppLastUsed(DateTime.now());
       final sessionId = DSPrefs.I.getSessionId();
 
-      attrs['session_id'] = sessionId;
-      attrs['event_id'] = _eventId;
-      attrs['user_time'] = DateTime.now().toIso8601String();
+      baseAttrs['session_id'] = sessionId;
+      baseAttrs['event_id'] = _eventId;
+      baseAttrs['user_time'] = DateTime.now().toIso8601String();
 
-      UserX.addEvent(eventName, attrs.map<String, String>((key, value) => MapEntry(key, '$value')));
+      UserX.addEvent(eventName, baseAttrs.map<String, String>((key, value) => MapEntry(key, '$value')));
 
-      logDebug('$eventName $attrs', stackSkip: stackSkip, stackDeep: 5);
+      logDebug('$eventName $baseAttrs', stackSkip: stackSkip, stackDeep: 5);
 
       if (kDebugMode && !_debugModeSend) return;
-      await m.AppMetrica.reportEventWithMap(eventName, attrs);
+
+      if (fbSend) {
+        unawaited(() async {
+          try {
+            await FirebaseAnalytics.instance.logEvent(name: eventName, parameters: () {
+              final attrs = Map<String, Object>.from(baseAttrs);
+              if (fbAttributes == null) {
+                if (attributes != null) {
+                  attrs.addAll(attributes);
+                }
+              } else {
+                attrs.addAll(fbAttributes);
+              }
+              return attrs;
+            }());
+          } catch (e, stack) {
+            if (!_reportEventErrorFB) {
+              _reportEventErrorFB = true;
+              Fimber.e('$e', stacktrace: stack);
+            }
+          }
+        }());
+      }
+      await m.AppMetrica.reportEventWithMap(eventName, () {
+        if (attributes == null || attributes.isEmpty) return baseAttrs;
+        final attrs = Map<String, Object>.from(baseAttrs);
+        attrs.addAll(attributes);
+        return attrs;
+      } ());
     } catch (e, stack) {
       if (!_reportEventError) {
         _reportEventError = true;
