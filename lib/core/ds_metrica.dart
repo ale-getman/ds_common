@@ -273,4 +273,15 @@ abstract class DSMetrica {
     await reportEventWithMap('set appmetrica_id', {'appmetrica_id': yandexId});
     DSPrefs.I.setYandexDeviceIdSent(true);
   }
+
+  /// Adds a [key]-[value] pair to or deletes it from the application error environment. The environment is shown in the crash and error report.
+  ///
+  /// * The maximum length of the [key] key is 50 characters. If the length is exceeded, the key is truncated to 50 characters.
+  /// * The maximum length of the [value] value is 4000 characters. If the length is exceeded, the value is truncated to 4000 characters.
+  /// * A maximum of 30 environment pairs of the form {key, value} are allowed. If you try to add the 31st pair, it will be ignored.
+  /// * Total size (sum {len(key) + len(value)} for (key, value) in error_environment) - 4500 characters.
+  /// * If a new pair exceeds the total size, it will be ignored.
+  static Future<void> putErrorEnvironmentValue(String key, String? value) =>
+      AppMetrica.putErrorEnvironmentValue(key, value);
+
 }
