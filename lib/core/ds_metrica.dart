@@ -96,7 +96,7 @@ abstract class DSMetrica {
     Map<String, Object>? attributes,
     Map<String, Object>? fbAttributes,
     int stackSkip = 1,
-  }) => reportEventWithMap(eventName, fbSend: fbSend, attributes, fbAttributes: fbAttributes, stackSkip: stackSkip + 1);
+  }) => reportEventWithMap(eventName, attributes, fbSend: fbSend, fbAttributes: fbAttributes, stackSkip: stackSkip + 1);
 
   /// Report sceen change to implement Heatmaps functionality in UserX
   static Future<void> reportScreenOpened(String screenName, {Map<String, Object>? attributes}) async {
@@ -148,9 +148,17 @@ abstract class DSMetrica {
       baseAttrs['event_id'] = _eventId;
       baseAttrs['user_time'] = DateTime.now().toIso8601String();
 
-      UserX.addEvent(eventName, baseAttrs.map<String, String>((key, value) => MapEntry(key, '$value')));
+      final Map<String, Object> attrs;
+      if (attributes == null) {
+        attrs = baseAttrs;
+      } else {
+        attrs = Map<String, Object>.from(baseAttrs);
+        attrs.addAll(attributes);
+      }
 
-      logDebug('$eventName $baseAttrs', stackSkip: stackSkip, stackDeep: 5);
+      UserX.addEvent(eventName, attrs.map<String, String>((key, value) => MapEntry(key, '$value')));
+
+      logDebug('$eventName $attrs', stackSkip: stackSkip, stackDeep: 5);
 
       if (kDebugMode && !_debugModeSend) return;
 
@@ -158,15 +166,13 @@ abstract class DSMetrica {
         unawaited(() async {
           try {
             await FirebaseAnalytics.instance.logEvent(name: eventName, parameters: () {
-              final attrs = Map<String, Object>.from(baseAttrs);
-              if (fbAttributes == null) {
-                if (attributes != null) {
-                  attrs.addAll(attributes);
-                }
+              if (fbAttributes != null) {
+                final fbAttrs = Map<String, Object>.from(baseAttrs);
+                fbAttrs.addAll(fbAttributes);
+                return fbAttrs;
               } else {
-                attrs.addAll(fbAttributes);
+                return attrs;
               }
-              return attrs;
             }());
           } catch (e, stack) {
             if (!_reportEventErrorFB) {
@@ -176,12 +182,7 @@ abstract class DSMetrica {
           }
         }());
       }
-      await m.AppMetrica.reportEventWithMap(eventName, () {
-        if (attributes == null || attributes.isEmpty) return baseAttrs;
-        final attrs = Map<String, Object>.from(baseAttrs);
-        attrs.addAll(attributes);
-        return attrs;
-      } ());
+      await m.AppMetrica.reportEventWithMap(eventName, attrs);
     } catch (e, stack) {
       if (!_reportEventError) {
         _reportEventError = true;
