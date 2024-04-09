@@ -282,6 +282,6 @@ abstract class DSMetrica {
   /// * Total size (sum {len(key) + len(value)} for (key, value) in error_environment) - 4500 characters.
   /// * If a new pair exceeds the total size, it will be ignored.
   static Future<void> putErrorEnvironmentValue(String key, String? value) =>
-      AppMetrica.putErrorEnvironmentValue(key, value);
+      m.AppMetrica.putErrorEnvironmentValue(key, value);
 
 }
