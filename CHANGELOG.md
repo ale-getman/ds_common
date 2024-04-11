@@ -1,5 +1,11 @@
+## 0.1.15
+- add DSLimitedBlock widget
+- add FirebaseAnalytics optional events (fbSend parameter of DSMetrica.reportEvent)
+- add AppMetrica putErrorEnvironmentValue wrapper
+- UserX updated
+
 ## 0.1.14
-- add DSLimitiedText widget
+- add DSLimitedText widget
 
 ## 0.1.13
 - add method internalInit to DSConstants

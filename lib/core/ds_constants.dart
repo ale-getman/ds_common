@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:fimber/fimber.dart';
 import 'package:flutter/foundation.dart';
