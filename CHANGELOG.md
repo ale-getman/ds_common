@@ -1,3 +1,6 @@
+## 0.1.16
+- allow to exclude duplicated and non-informative exceptions from logging in DSCrashReportingTree
+
 ## 0.1.15
 - add DSLimitedBlock widget
 - add FirebaseAnalytics optional events (fbSend parameter of DSMetrica.reportEvent)
