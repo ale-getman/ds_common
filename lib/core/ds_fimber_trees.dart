@@ -47,6 +47,11 @@ class DSDebugTree extends DebugTree {
 }
 
 class DSCrashReportingTree extends LogTree {
+  // Exclude errors with this substrings
+  static final excludes = <String>{};
+  // Errors will be skipped if description and stack are same as one of [skipCloneErrors] last errors
+  static var skipCloneErrors = 0;
+  
   // Only Log Warnings and Exceptions
   static const defaultLevels = <String>['W', 'E'];
   // Same values as android.util.Log
@@ -58,7 +63,8 @@ class DSCrashReportingTree extends LogTree {
     'E': 6,
   };
   final List<String> logLevels;
-
+  final _lastErrors = <String>[];
+  
   @override
   List<String> getLevels() => logLevels;
 
@@ -66,6 +72,16 @@ class DSCrashReportingTree extends LogTree {
 
   @override
   void log(String level, String message, {String? tag, dynamic ex, StackTrace? stacktrace}) {
+    if (excludes.any((e) => message.contains(e))) return;
+    if (skipCloneErrors > 0) {
+      final text = '$message $stacktrace';
+      if (_lastErrors.contains(text)) return;
+      if (_lastErrors.length >= skipCloneErrors) {
+        _lastErrors.removeRange(skipCloneErrors, _lastErrors.length);
+      }
+      _lastErrors.insert(0, text);
+    }
+    
     FirebaseCrashlytics.instance.setCustomKey('priority', _priorities[level] ?? 0);
     FirebaseCrashlytics.instance.recordError('[$level] $message', stacktrace);
     FirebaseCrashlytics.instance.setCustomKey('priority', -1);
