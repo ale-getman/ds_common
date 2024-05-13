@@ -6,7 +6,9 @@ class DSLimitedBlock extends StatefulWidget {
   final int groupId;
   /// negative value means than use another [groupMaxHeight] of this group
   final double groupMaxHeight;
+  final double groupMaxWidth;
   final double Function(BuildContext context, double screenWidth, double scale) calcHeight;
+  final Size Function(BuildContext context, double scale)? calcSize;
   final Widget Function(BuildContext context, double scale) builder;
   final double minScale;
 
@@ -16,7 +18,9 @@ class DSLimitedBlock extends StatefulWidget {
     required this.groupMaxHeight,
     required this.calcHeight,
     required this.builder,
+    this.groupMaxWidth = double.maxFinite,
     this.minScale = 0.3,
+    this.calcSize,
   }): assert(minScale > 0);
 
   @override
@@ -108,6 +112,26 @@ class _DSLimitedBlockState extends State<DSLimitedBlock> {
         _localScale /= sqrt(height / maxHeight);
         _localScale -= 0.001;
       }
+
+      if (widget.calcSize != null) {
+        final maxWidth = group?.states.fold<double>(double.maxFinite, (p, s) {
+          final h = s.widget.groupMaxWidth;
+          if (h <= 0) return p;
+          return min(p, h);
+        }) ?? widget.groupMaxWidth;
+
+        while (_localScale > widget.minScale) {
+          final size = (group?.states ?? [this]).fold<Size>(Size.zero, (p, w) {
+            if (w.widget.calcSize == null) return p;
+            final s = w.widget.calcSize!(context, _localScale);
+            return Size(max(s.width, p.width), p.height + s.height);
+          });
+          if (size.height <= maxHeight && size.width <= maxWidth) break;
+          _localScale /= max(sqrt(size.height / maxHeight), sqrt(size.width / maxWidth));
+          _localScale -= 0.001;
+        }
+      }
+
       group?.scale = _localScale;
     }
 
