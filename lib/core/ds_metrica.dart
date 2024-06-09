@@ -82,6 +82,9 @@ abstract class DSMetrica {
     }
   }
 
+  /// Set user profile ID
+  static Future<void> setUserProfileID(String userProfileID) => m.AppMetrica.setUserProfileID(userProfileID);
+
   /// Send only one event per app lifetime
   static void reportFirstEvent(String eventName, {Map<String, Object>? attributes, int stackSkip = 1}) {
     final firstEvent = DSPrefs.I.internal.getString(_firstEventParam);
