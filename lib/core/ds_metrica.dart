@@ -76,8 +76,12 @@ abstract class DSMetrica {
     // allow to first start without internet connection
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       unawaited(() async {
-        _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
-        Fimber.d('yandexId=$yandexId');
+        try {
+          _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
+          Fimber.d('yandexId=$yandexId');
+        } on m.DeviceIdRequestException catch (e, stack) {
+          Fimber.e('$e reason=${e.reason}', stacktrace: stack);
+        }
       }());
     }
   }
