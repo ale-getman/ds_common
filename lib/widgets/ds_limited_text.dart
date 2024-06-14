@@ -61,8 +61,9 @@ class DSLimitedText extends StatelessWidget {
               textDirection: TextDirection.ltr,
             );
             tp.layout(maxWidth: constraints.maxWidth);
+            final size = Size(tp.width, tp.height + marginHeight * scale);
             tp.dispose();
-            return Size(tp.width, tp.height + marginHeight * scale);
+            return size;
           },
           builder: (context, scale) {
             return RichText(
