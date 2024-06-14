@@ -1,3 +1,8 @@
+## 0.1.17
+- add AppMetrica.setUserProfileID
+- add DSLimitedBlock.calcSize method (experimental)
+- add exceptions logging for yandexId initialization
+
 ## 0.1.16
 - allow to exclude duplicated and non-informative exceptions from logging in DSCrashReportingTree
 
