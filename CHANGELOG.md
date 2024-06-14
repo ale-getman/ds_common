@@ -1,3 +1,6 @@
+## 0.1.18
+- fix DSLimitedText exception
+
 ## 0.1.17
 - add AppMetrica.setUserProfileID
 - add DSLimitedBlock.calcSize method (experimental)
