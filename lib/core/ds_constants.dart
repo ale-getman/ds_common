@@ -52,6 +52,7 @@ class DSConstants {
     }
   }
 
+  /// is app build internal (3-number builds are internal - ex. 1.4.12; 2-number are production - 1.0, 3.1, etc)
   bool get isInternalVersion {
     if (!_isInitialized) {
       const err = 'Wait for init';
@@ -60,7 +61,14 @@ class DSConstants {
     }
     return _isInternalVersion;
   }
-  bool get isProductionAds => !isInternalVersion;
+
+  bool get isInternalVersionOpt => _isInternalVersion;
+
+  /// is app build production (2-number builds are production - 1.0, 3.1, etc)
+  bool get isProductionVersion => !isInternalVersion;
+
+  @Deprecated('Use isProductionVersion instead')
+  bool get isProductionAds => isProductionVersion;
 
   late final PackageInfo packageInfo;
 }
