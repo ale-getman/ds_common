@@ -1,3 +1,7 @@
+## 0.1.19
+- fix web platform checks
+- add DSConstants.isInternalVersionOpt for uninitialized access
+
 ## 0.1.18
 - fix DSLimitedText exception
 
