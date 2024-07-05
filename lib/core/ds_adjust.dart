@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:adjust_sdk/adjust.dart';
+import 'package:adjust_sdk/adjust_ad_revenue.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:fimber/fimber.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import 'ds_constants.dart';
+import 'ds_metrica.dart';
 import 'ds_primitives.dart';
 
 typedef DSAdjustAttribution = AdjustAttribution;
@@ -45,6 +50,39 @@ abstract class DSAdjust {
 
     _isInitialized = true;
   }
+
+  /// Just Adjust [trackAdRevenueNew] call
+  static void trackAdRevenueNew({
+    required double value,
+    required String currencyCode,
+    required String adRevenueNetwork,
+    required String adRevenueUnit,
+  }) {
+    final adRevenue = AdjustAdRevenue(AdjustConfig.AdRevenueSourceAdMob);
+    adRevenue.setRevenue(value, currencyCode);
+    adRevenue.adRevenueNetwork = adRevenueNetwork;
+    adRevenue.adRevenueUnit = adRevenueUnit;
+    Adjust.trackAdRevenueNew(adRevenue);
+  }
+
+  /// Result described in https://github.com/adjust/flutter_sdk/blob/master/README.md#af-att-framework
+  static Future<num> requestATT() async {
+    if (kIsWeb || !Platform.isIOS) return -1;
+    final time = Stopwatch()..start();
+    final res = await Adjust.requestTrackingAuthorizationWithCompletionHandler();
+    time.stop();
+    DSMetrica.reportEvent('AppTrackingTransparency', attributes: {
+      'att_result': '$res',
+      'att_time_delta_sec': time.elapsed.inSeconds,
+      'att_time_delta_ms': time.elapsedMilliseconds,
+    });
+    return res;
+  }
+
+  /// Result described in https://github.com/adjust/flutter_sdk/blob/master/README.md#af-att-framework
+  static Future<int> getATTStatus() async {
+    return Adjust.getAppTrackingAuthorizationStatus();
+    }
 
   /// Add handler for Adjust -> attributionCallback
   static void registerAttributionCallback(DSAttributionCallback callback) {
