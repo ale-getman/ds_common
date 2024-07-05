@@ -22,10 +22,12 @@ dependencies:
   firebase_remote_config: ^4.0.0
   firebase_analytics: ^10.0.3
 
+  adjust_sdk: 4.37.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.1
+  flutter_lints: ^3.0.1
   tuple: ^2.0.1
 
 flutter:
