@@ -20,9 +20,9 @@ class DSDebugTree extends DebugTree {
   final bool useColors;
 
   DSDebugTree({
-    logLevels = DebugTree.defaultLevels,
+    super.logLevels = DebugTree.defaultLevels,
     this.useColors = true,
-  }) : super(logLevels: logLevels);
+  });
 
 
   @override

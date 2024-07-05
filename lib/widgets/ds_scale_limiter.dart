@@ -9,12 +9,12 @@ import '../core/ds_metrica.dart';
 class DSScaleLimiter extends StatelessWidget {
 
   const DSScaleLimiter({
-    Key? key,
+    super.key,
     required this.child,
     this.minFactor = 0.9,
     this.maxFactor = 1.2,
     this.minWidth = 360,
-  }) : super(key: key);
+  });
 
   final Widget child;
   final double minFactor;
