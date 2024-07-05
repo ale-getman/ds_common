@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// ignore: depend_on_referenced_packages
 import 'package:meta/meta.dart' as meta;
 
 abstract class DSPrefs extends ChangeNotifier {

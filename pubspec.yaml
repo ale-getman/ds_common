@@ -1,6 +1,6 @@
 name: ds_common
-description: Common library SectDev of Flutter projects (https://sect.dev/) - wraps Yandex Metrica, Firebase Crashlytics, RemoteConfig, Fimber, etc.
-version: 0.1.19
+description: Common library SectDev of Flutter projects (https://sect.dev/) - wraps Yandex Metrica, Adjust, Firebase, Fimber, etc.
+version: 0.1.20
 repository: https://github.com/al-tush/ds_common
 
 environment:
@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  meta: ^1.9.0
   fimber: ^0.7.0
   firebase_core: ^2.3.0
   firebase_crashlytics: ^3.2.0
@@ -22,7 +23,7 @@ dependencies:
   firebase_remote_config: ^4.0.0
   firebase_analytics: ^10.0.3
 
-  adjust_sdk: 4.37.1
+  adjust_sdk: ^4.38.1
 
 dev_dependencies:
   flutter_test:

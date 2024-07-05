@@ -1,3 +1,7 @@
+## 0.1.20
+- add DSAdjust (Adjust library integration)
+- minor code quality improvements
+
 ## 0.1.19
 - fix web platform checks
 - add DSConstants.isInternalVersionOpt for uninitialized access
