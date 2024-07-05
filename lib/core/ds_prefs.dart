@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+// ignore: depend_on_referenced_packages
+import 'package:meta/meta.dart' as meta;
 
 abstract class DSPrefs extends ChangeNotifier {
   SharedPreferences? _prefs;
@@ -16,7 +18,7 @@ abstract class DSPrefs extends ChangeNotifier {
 
   DSPrefs() {
     assert(_instance == null);
-    _instance = this;
+    _instance ??= this;
   }
 
   Future<void> init() async {
@@ -66,6 +68,9 @@ abstract class DSPrefs extends ChangeNotifier {
   }
 
   int getSessionId() => internal.getInt('app_session_id') ?? 0;
+  // ignore:invalid_internal_annotation
+  @meta.internal
+  /// Use [DSMetrica.tryUpdateAppSessionId] instead
   void setSessionId(int value) => setInt('app_session_id', value);
 
   DateTime getAppLastUsed() =>

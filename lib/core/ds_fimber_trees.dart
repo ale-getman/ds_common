@@ -47,14 +47,14 @@ class DSDebugTree extends DebugTree {
 }
 
 class DSCrashReportingTree extends LogTree {
-  // Exclude errors with this substrings
+  /// Exclude errors with this substrings
   static final excludes = <String>{};
-  // Errors will be skipped if description and stack are same as one of [skipCloneErrors] last errors
+  /// Errors will be skipped if description and stack are same as one of [skipCloneErrors] last errors
   static var skipCloneErrors = 0;
   
-  // Only Log Warnings and Exceptions
+  /// Only Log Warnings and Exceptions
   static const defaultLevels = <String>['W', 'E'];
-  // Same values as android.util.Log
+  /// Same values as android.util.Log
   static const _priorities = <String, int>{
     'V': 2,
     'D': 3,
