@@ -1,3 +1,6 @@
+## 0.1.21
+- expand Adjust methods list
+
 ## 0.1.20
 - add DSAdjust (Adjust library integration)
 - minor code quality improvements
