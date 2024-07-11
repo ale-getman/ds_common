@@ -21,6 +21,8 @@ typedef UserProfile = m.UserProfile;
 typedef StringAttribute = m.StringAttribute;
 typedef AppMetricaErrorDescription = m.AppMetricaErrorDescription;
 
+enum EventSendingType { everyTime, oncePerAppLifetime }
+
 /// You must call
 /// await DSMetrica.init()
 /// at the app start
@@ -90,20 +92,37 @@ abstract class DSMetrica {
   static Future<void> setUserProfileID(String userProfileID) => m.AppMetrica.setUserProfileID(userProfileID);
 
   /// Send only one event per app lifetime
+  @Deprecated(
+      'Используйте отправку событий с типом [EventSendingType.oncePerApplifetime] в методе [DSMetrica.reportEvent]')
   static void reportFirstEvent(String eventName, {Map<String, Object>? attributes, int stackSkip = 1}) {
     final firstEvent = DSPrefs.I.internal.getString(_firstEventParam);
     if (firstEvent != null) return;
     DSPrefs.I.internal.setString(_firstEventParam, eventName);
-    reportEventWithMap('$eventName (first event)', attributes, stackSkip: stackSkip + 1);
+    reportEventWithMap(
+      '$eventName (first event)',
+      attributes,
+      stackSkip: stackSkip + 1,
+      eventSendingType: EventSendingType.oncePerAppLifetime,
+    );
   }
 
   /// Report event to AppMetrica and UserX (disabled in debug mode)
-  static void reportEvent(String eventName, {
+  static void reportEvent(
+    String eventName, {
     bool fbSend = false,
     Map<String, Object>? attributes,
     Map<String, Object>? fbAttributes,
     int stackSkip = 1,
-  }) => reportEventWithMap(eventName, attributes, fbSend: fbSend, fbAttributes: fbAttributes, stackSkip: stackSkip + 1);
+    EventSendingType eventSendingType = EventSendingType.everyTime,
+  }) =>
+      reportEventWithMap(
+        eventName,
+        attributes,
+        fbSend: fbSend,
+        fbAttributes: fbAttributes,
+        stackSkip: stackSkip + 1,
+        eventSendingType: eventSendingType,
+      );
 
   /// Report sceen change to implement Heatmaps functionality in UserX
   static Future<void> reportScreenOpened(String screenName, {Map<String, Object>? attributes}) async {
@@ -133,13 +152,23 @@ abstract class DSMetrica {
   static var _reportEventErrorFB = false;
 
   /// Report event to AppMetrica and UserX (disabled in debug mode)
-  static Future<void> reportEventWithMap(String eventName,
-      Map<String, Object>? attributes,{
-        bool fbSend = false,
-        Map<String, Object>? fbAttributes,
-        int stackSkip = 1,
-      }) async {
+  static Future<void> reportEventWithMap(
+    String eventName,
+    Map<String, Object>? attributes, {
+    bool fbSend = false,
+    Map<String, Object>? fbAttributes,
+    int stackSkip = 1,
+    EventSendingType eventSendingType = EventSendingType.everyTime,
+  }) async {
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
+
+    if (eventSendingType == EventSendingType.oncePerAppLifetime && _isEventAlreadySendPerLifetime(eventName)) {
+      logDebug(
+          'Analytics event $eventName with type ${EventSendingType.oncePerAppLifetime.name} has already been dispatched, current report is skipped',
+          stackSkip: stackSkip,
+          stackDeep: 5);
+      return;
+    }
 
     _eventId++;
     try {
@@ -167,7 +196,10 @@ abstract class DSMetrica {
 
       logDebug('$eventName $attrs', stackSkip: stackSkip, stackDeep: 5);
 
-      if (kDebugMode && !_debugModeSend) return;
+      if (kDebugMode && !_debugModeSend) {
+        if (eventSendingType == EventSendingType.oncePerAppLifetime) _setEventSendPerLifetime(eventName);
+        return;
+      }
 
       if (fbSend) {
         unawaited(() async {
@@ -190,6 +222,8 @@ abstract class DSMetrica {
         }());
       }
       await m.AppMetrica.reportEventWithMap(eventName, attrs);
+
+      if (eventSendingType == EventSendingType.oncePerAppLifetime) _setEventSendPerLifetime(eventName);
     } catch (e, stack) {
       if (!_reportEventError) {
         _reportEventError = true;
@@ -291,4 +325,18 @@ abstract class DSMetrica {
   static Future<void> putErrorEnvironmentValue(String key, String? value) =>
       m.AppMetrica.putErrorEnvironmentValue(key, value);
 
+  static const _oncePerApplifetimePrefix = 'once_per_lifetime';
+  static String _oncePerApplifetimeEventKey(String eventName) => '${_oncePerApplifetimePrefix}_$eventName';
+
+  static bool _isEventAlreadySendPerLifetime(String eventName) {
+    final key = _oncePerApplifetimeEventKey(eventName);
+
+    return DSPrefs.I.internal.getBool(key) ?? false;
+  }
+
+  static void _setEventSendPerLifetime(String eventName) {
+    final key = _oncePerApplifetimeEventKey(eventName);
+
+    DSPrefs.I.internal.setBool(key, true);
+  }
 }
