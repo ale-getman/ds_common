@@ -92,8 +92,7 @@ abstract class DSMetrica {
   static Future<void> setUserProfileID(String userProfileID) => m.AppMetrica.setUserProfileID(userProfileID);
 
   /// Send only one event per app lifetime
-  @Deprecated(
-      'Используйте отправку событий с типом [EventSendingType.oncePerApplifetime] в методе [DSMetrica.reportEvent]')
+  @Deprecated('Use event sending with type [EventSendingType.oncePerApplifetime] in the [DSMetrica.reportEvent] method')
   static void reportFirstEvent(String eventName, {Map<String, Object>? attributes, int stackSkip = 1}) {
     final firstEvent = DSPrefs.I.internal.getString(_firstEventParam);
     if (firstEvent != null) return;
@@ -166,7 +165,7 @@ abstract class DSMetrica {
       logDebug(
           'Analytics event $eventName with type ${EventSendingType.oncePerAppLifetime.name} has already been dispatched, current report is skipped',
           stackSkip: stackSkip,
-          stackDeep: 5);
+          stackDeep: 1);
       return;
     }
 
@@ -328,10 +327,14 @@ abstract class DSMetrica {
   static const _oncePerApplifetimePrefix = 'once_per_lifetime';
   static String _oncePerApplifetimeEventKey(String eventName) => '${_oncePerApplifetimePrefix}_$eventName';
 
+  static bool _isEventSentLegacy(String eventName) {
+    return DSPrefs.I.internal.getString(_firstEventParam) == eventName;
+  }
+
   static bool _isEventAlreadySendPerLifetime(String eventName) {
     final key = _oncePerApplifetimeEventKey(eventName);
 
-    return DSPrefs.I.internal.getBool(key) ?? false;
+    return _isEventSentLegacy(eventName) || (DSPrefs.I.internal.getBool(key) ?? false);
   }
 
   static void _setEventSendPerLifetime(String eventName) {
