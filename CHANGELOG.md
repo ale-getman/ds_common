@@ -1,3 +1,6 @@
+## 0.1.22
+- add EventSendingType oncePerAppLifetime to report method
+
 ## 0.1.21
 - expand Adjust methods list
 
