@@ -65,7 +65,7 @@ abstract class DSMetrica {
     WidgetsFlutterBinding.ensureInitialized();
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
-        sessionsAutoTracking: !kDebugMode || _debugModeSend,
+        sessionsAutoTrackingEnabled: !kDebugMode || _debugModeSend,
       ));
       if (kDebugMode && !_debugModeSend) {
         await m.AppMetrica.pauseSession();
@@ -79,7 +79,7 @@ abstract class DSMetrica {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       unawaited(() async {
         try {
-          _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
+          _yandexId = await m.AppMetrica.deviceId ?? '';
           Fimber.d('yandexId=$yandexId');
         } on m.DeviceIdRequestException catch (e, stack) {
           Fimber.e('$e reason=${e.reason}', stacktrace: stack);

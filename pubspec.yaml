@@ -17,7 +17,7 @@ dependencies:
   firebase_crashlytics: ^3.2.0
   shared_preferences: ^2.0.17
   userx_flutter: ^1.1.2
-  appmetrica_plugin: ^1.3.0
+  appmetrica_plugin: ^2.1.1
   decimal: ^2.3.0
   package_info_plus: ^4.0.2
   firebase_remote_config: ^4.0.0
