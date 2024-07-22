@@ -1,3 +1,8 @@
+## 0.1.23
+- add Sentry support
+- add web logging support (by Sentry)
+- appmetrica_plugin updated
+
 ## 0.1.22
 - add EventSendingType oncePerAppLifetime to report method
 
