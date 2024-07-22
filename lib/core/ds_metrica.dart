@@ -8,6 +8,7 @@ import 'package:fimber/fimber.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:userx_flutter/userx_flutter.dart';
 
 import 'ds_logging.dart';
@@ -48,10 +49,12 @@ abstract class DSMetrica {
   /// Initialize DSMetrica. Must call before the first use
   /// [yandexKey] - API key of Yandex App Metrica
   /// [userXKey] - API key of UserX
+  /// [sentryKey] - API key of Sentry
   /// [forceSend] - send events in debug mode too
   static Future<void> init({
     required String yandexKey,
     required String userXKey,
+    required String sentryKey,
     bool debugModeSend = false,
   }) async {
     if (_isInitialized) {
@@ -62,18 +65,39 @@ abstract class DSMetrica {
     _userXKey = userXKey;
     _debugModeSend = debugModeSend;
 
+    final waits = <Future>[];
+
     WidgetsFlutterBinding.ensureInitialized();
+
+    if (sentryKey.isNotEmpty && (!kDebugMode || _debugModeSend)) {
+      waits.add(() async {
+        await SentryFlutter.init(
+              (options) {
+            options.dsn = sentryKey;
+            options.diagnosticLevel = kDebugMode ? SentryLevel.debug : SentryLevel.warning;
+            options.tracesSampleRate = 1.0;
+            options.profilesSampleRate = 1.0;
+          },
+        );
+      } ());
+    }
+
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
         sessionsAutoTrackingEnabled: !kDebugMode || _debugModeSend,
       ));
+
       if (kDebugMode && !_debugModeSend) {
         await m.AppMetrica.pauseSession();
       }
     } else {
       assert(yandexKey == '', 'yandexKey supports mobile platform only. Remove yandexKey id');
       assert(userXKey == '', 'userXKey supports mobile platform only. Remove userXKey id');
+      //assert(sentryKey == '', 'sentryKey supports mobile platform only. Remove sentryKey id');
     }
+
+    await Future.wait(waits);
+
     _isInitialized = true;
     // allow to first start without internet connection
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
@@ -232,14 +256,22 @@ abstract class DSMetrica {
   }
 
   /// AppMetrica wrapper
-  static Future<void> reportAdRevenue(AdRevenue revenue) => m.AppMetrica.reportAdRevenue(revenue);
+  static Future<void> reportAdRevenue(AdRevenue revenue) async {
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
+    await m.AppMetrica.reportAdRevenue(revenue);
+  }
 
   /// AppMetrica wrapper
-  static Future<void> reportUserProfile(UserProfile userProfile) => m.AppMetrica.reportUserProfile(userProfile);
+  static Future<void> reportUserProfile(UserProfile userProfile) async {
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
+    await m.AppMetrica.reportUserProfile(userProfile);
+  }
 
   /// AppMetrica wrapper
-  static Future<void> reportError({String? message, AppMetricaErrorDescription? errorDescription}) =>
-      m.AppMetrica.reportError(message: message, errorDescription: errorDescription);
+  static Future<void> reportError({String? message, AppMetricaErrorDescription? errorDescription}) async {
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
+    await m.AppMetrica.reportError(message: message, errorDescription: errorDescription);
+  }
 
   /// Initialize UserX if it is allowed by RemoteConfig
   static Future<void> tryStartUserX() async {
@@ -321,8 +353,10 @@ abstract class DSMetrica {
   /// * A maximum of 30 environment pairs of the form {key, value} are allowed. If you try to add the 31st pair, it will be ignored.
   /// * Total size (sum {len(key) + len(value)} for (key, value) in error_environment) - 4500 characters.
   /// * If a new pair exceeds the total size, it will be ignored.
-  static Future<void> putErrorEnvironmentValue(String key, String? value) =>
-      m.AppMetrica.putErrorEnvironmentValue(key, value);
+  static Future<void> putErrorEnvironmentValue(String key, String? value) async {
+    if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
+    await m.AppMetrica.putErrorEnvironmentValue(key, value);
+  }
 
   static const _oncePerApplifetimePrefix = 'once_per_lifetime';
   static String _oncePerApplifetimeEventKey(String eventName) => '${_oncePerApplifetimePrefix}_$eventName';

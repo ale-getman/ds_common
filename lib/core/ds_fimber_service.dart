@@ -39,39 +39,46 @@ abstract class DSFimberService {
       Fimber.e('$error', stacktrace: stack);
       return true;
     };
-    Isolate.current.addErrorListener(RawReceivePort((pair) async {
-      final List<dynamic> errorAndStacktrace = pair;
-      final error = errorAndStacktrace.first;
-      final stackText =  errorAndStacktrace.last as String?;
-      final StackTrace? stack;
-      if (stackText?.isNotEmpty == true) {
-        stack = StackTrace.fromString(stackText!);
-      } else {
-        stack = null;
-      }
-      Fimber.e('$error', stacktrace: stack);
-    }).sendPort);
 
     await Firebase.initializeApp(options: firebaseOptions);
-    if (kDebugMode) {
-      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
-    }
-    unawaited(FirebaseCrashlytics.instance.setUserIdentifier(DSMetrica.yandexId));
 
-    IsolateNameServer.removePortNameMapping(_portName);
-    final port = ReceivePort(_portName);
-    final res = IsolateNameServer.registerPortWithName(port.sendPort, _portName);
-    if (!res) {
-      Fimber.e('Failed to register port $_portName', stacktrace: StackTrace.current);
+    if (!kIsWeb) {
+      Isolate.current.addErrorListener(RawReceivePort((pair) async {
+        final List<dynamic> errorAndStacktrace = pair;
+        final error = errorAndStacktrace.first;
+        final stackText = errorAndStacktrace.last as String?;
+        final StackTrace? stack;
+        if (stackText?.isNotEmpty == true) {
+          stack = StackTrace.fromString(stackText!);
+        } else {
+          stack = null;
+        }
+        Fimber.e('$error', stacktrace: stack);
+      }).sendPort);
+
+      if (kDebugMode) {
+        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+      }
+      unawaited(FirebaseCrashlytics.instance.setUserIdentifier(DSMetrica.yandexId));
+
+      IsolateNameServer.removePortNameMapping(_portName);
+      final port = ReceivePort(_portName);
+      final res = IsolateNameServer.registerPortWithName(port.sendPort, _portName);
+      if (!res) {
+        Fimber.e('Failed to register port $_portName',
+            stacktrace: StackTrace.current);
+      }
+      port.listen((message) {
+        final level = message[0] as String;
+        final msg = message[1] as String;
+        final tag = message[2] as String?;
+        final ex = message[3];
+        final stack = message[4] is String
+            ? StackTrace.fromString(message[4])
+            : null;
+        Fimber.log(level, msg, tag: tag, ex: ex, stacktrace: stack);
+      });
     }
-    port.listen((message) {
-      final level = message[0] as String;
-      final msg = message[1] as String;
-      final tag = message[2] as String?;
-      final ex = message[3];
-      final stack = message[4] is String ? StackTrace.fromString(message[4]) : null;
-      Fimber.log(level, msg, tag: tag, ex: ex, stacktrace: stack);
-    });
   }
 
   static Future<void> initFimberInIsolate() async {

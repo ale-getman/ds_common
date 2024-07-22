@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'ds_logging.dart';
 import 'ds_metrica.dart';
@@ -82,9 +83,11 @@ class DSCrashReportingTree extends LogTree {
       _lastErrors.insert(0, text);
     }
     
-    FirebaseCrashlytics.instance.setCustomKey('priority', _priorities[level] ?? 0);
-    FirebaseCrashlytics.instance.recordError('[$level] $message', stacktrace);
-    FirebaseCrashlytics.instance.setCustomKey('priority', -1);
+    if (!kIsWeb) {
+      FirebaseCrashlytics.instance.setCustomKey('priority', _priorities[level] ?? 0);
+      FirebaseCrashlytics.instance.recordError('[$level] $message', stacktrace);
+      FirebaseCrashlytics.instance.setCustomKey('priority', -1);
+    }
 
     if (!message.contains('failed to connect to yandex')) {
       unawaited(DSMetrica.reportError(
@@ -92,6 +95,10 @@ class DSCrashReportingTree extends LogTree {
         errorDescription: stacktrace != null
             ? AppMetricaErrorDescription(stacktrace, message: message, type: '[$level]')
             : null,
+      ));
+      unawaited(Sentry.captureException(
+        ex ?? '[$level] $message',
+        stackTrace: stacktrace,
       ));
       final limStack = LimitedStackTrace(
         stackTrace: stacktrace ?? StackTrace.empty,
