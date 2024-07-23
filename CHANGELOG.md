@@ -1,3 +1,6 @@
+## 0.1.24
+- fix breaking change issue
+
 ## 0.1.23
 - add Sentry support
 - add web logging support (by Sentry)
