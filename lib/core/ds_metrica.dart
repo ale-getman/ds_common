@@ -54,7 +54,7 @@ abstract class DSMetrica {
   static Future<void> init({
     required String yandexKey,
     required String userXKey,
-    required String sentryKey,
+    String sentryKey = '',
     bool debugModeSend = false,
   }) async {
     if (_isInitialized) {
