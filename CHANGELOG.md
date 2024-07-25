@@ -1,3 +1,6 @@
+## 0.1.26
+- add device_info versions
+
 ## 0.1.25
 - Add DSMetricaUserIdType calls for ds_purchase support
 - Add recall for Adjust.getAdid()
