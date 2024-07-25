@@ -1,3 +1,6 @@
+## 0.1.27
+- declare web support 
+
 ## 0.1.26
 - add device_info versions
 
