@@ -89,6 +89,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  device_info:
+    dependency: transitive
+    description:
+      name: device_info
+      sha256: "38eee179182a959074c9cfac2adbe27d0f9b6488ea9f24951508539bcb53af1a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
+  device_info_platform_interface:
+    dependency: transitive
+    description:
+      name: device_info_platform_interface
+      sha256: b148e0bf9640145d09a4f8dea96614076f889e7f7f8b5ecab1c7e5c2dbc73c1b
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   ds_common:
     dependency: "direct main"
     description:

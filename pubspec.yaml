@@ -26,6 +26,9 @@ dependencies:
 
   adjust_sdk: ^4.38.1
 
+  # Legacy only (remove in future)
+  device_info: 2.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

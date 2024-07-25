@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
 import 'package:decimal/decimal.dart' as d;
+import 'package:device_info/device_info.dart';
+import 'package:ds_common/core/ds_adjust.dart';
 import 'package:ds_common/core/ds_constants.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -24,6 +26,16 @@ typedef AppMetricaErrorDescription = m.AppMetricaErrorDescription;
 
 enum EventSendingType { everyTime, oncePerAppLifetime }
 
+enum DSMetricaUserIdType {
+  /// Not initialize Metrica.setUserProfileID(...)
+  none,
+  /// Use Metrica.setUserProfileID(DEVICE_ID)
+  @Deprecated('Legacy only. Prefer to use adjustId in new apps')
+  deviceId,
+  /// Use Metrica.setUserProfileID(ADJUST_ID)
+  adjustId,
+}
+
 /// You must call
 /// await DSMetrica.init()
 /// at the app start
@@ -41,6 +53,11 @@ abstract class DSMetrica {
   static Map<String, Object> Function()? _persistentAttrsHandler;
   static var _isInitialized = false;
 
+  static var _userIdType = DSMetricaUserIdType.none;
+  static String? _userProfileID;
+
+  static DSMetricaUserIdType get userIdType => _userIdType;
+
   static String get yandexId {
     assert(_isInitialized);
     return _yandexId;
@@ -55,6 +72,7 @@ abstract class DSMetrica {
     required String yandexKey,
     required String userXKey,
     String sentryKey = '',
+    DSMetricaUserIdType userIdType = DSMetricaUserIdType.none,
     bool debugModeSend = false,
   }) async {
     if (_isInitialized) {
@@ -64,6 +82,7 @@ abstract class DSMetrica {
 
     _userXKey = userXKey;
     _debugModeSend = debugModeSend;
+    _userIdType = userIdType;
 
     final waits = <Future>[];
 
@@ -98,6 +117,41 @@ abstract class DSMetrica {
 
     await Future.wait(waits);
 
+    switch (_userIdType) {
+      case DSMetricaUserIdType.none:
+        break;
+      case DSMetricaUserIdType.adjustId:
+        Future<void> setAdid() async {
+          final id = await DSAdjust.getAdid();
+          if (id != null) {
+            await DSMetrica.setUserProfileID(id);
+          }
+          Fimber.d('adjustId=$id');
+        }
+        if (DSAdjust.isInitialized) {
+          unawaited(setAdid());
+        } else {
+          DSAdjust.addAfterInitCallback(() => setAdid());
+        }
+        break;
+      case DSMetricaUserIdType.deviceId:
+        unawaited(() async {
+          final String id;
+          if (!kIsWeb && Platform.isAndroid) {
+            final info = await DeviceInfoPlugin().androidInfo;
+            id = info.androidId; //UUID for Android
+          } else if (!kIsWeb && Platform.isIOS) {
+            var data = await DeviceInfoPlugin().iosInfo;
+            id = data.identifierForVendor; //UUID for iOS
+          } else {
+            throw Exception('Unsupported platform');
+          }
+          await DSMetrica.setUserProfileID(id);
+          Fimber.d('adjustId=$id');
+        } ());
+        break;
+    }
+
     _isInitialized = true;
     // allow to first start without internet connection
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
@@ -112,8 +166,14 @@ abstract class DSMetrica {
     }
   }
 
+  /// Get user profile ID which was initialized in current session
+  static String? userProfileID() => _userProfileID;
+
   /// Set user profile ID
-  static Future<void> setUserProfileID(String userProfileID) => m.AppMetrica.setUserProfileID(userProfileID);
+  static Future<void> setUserProfileID(String userProfileID) async {
+    _userProfileID = userProfileID;
+    await m.AppMetrica.setUserProfileID(userProfileID);
+  }
 
   /// Send only one event per app lifetime
   @Deprecated('Use event sending with type [EventSendingType.oncePerApplifetime] in the [DSMetrica.reportEvent] method')
