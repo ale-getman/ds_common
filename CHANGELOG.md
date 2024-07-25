@@ -1,3 +1,8 @@
+## 0.1.25
+- Add DSMetricaUserIdType calls for ds_purchase support
+- Add recall for Adjust.getAdid()
+- Add method DSAdjust.addAfterInitCallback
+
 ## 0.1.24
 - fix breaking change issue
 
