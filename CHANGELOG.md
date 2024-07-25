@@ -1,3 +1,6 @@
+## 0.1.28
+- try to fix DSMetrica.yandexId for first run
+
 ## 0.1.27
 - declare web support 
 
