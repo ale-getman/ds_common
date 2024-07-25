@@ -22,6 +22,8 @@ abstract class DSAdjust {
   static final _attributionCallbacks = <DSAttributionCallback>{};
   static DSAdjustAttribution? _lastAttribution;
 
+  static final _initCallbacks = <void Function()>{};
+
   static _WidgetsObserver? _widgetsObserver;
 
   /// Initialize DSAdjust
@@ -49,6 +51,15 @@ abstract class DSAdjust {
     Adjust.start(config);
 
     _isInitialized = true;
+
+    for (final callback in _initCallbacks) {
+      callback();
+    }
+  }
+
+  /// Add callback to be called after initialization
+  static addAfterInitCallback(void Function() callback) {
+    _initCallbacks.add(callback);
   }
 
   /// Just Adjust [trackAdRevenueNew] call
@@ -78,6 +89,8 @@ abstract class DSAdjust {
     });
     return res;
   }
+
+  static Future<String?> getAdid() => Adjust.getAdid();
 
   /// Result described in https://github.com/adjust/flutter_sdk/blob/master/README.md#af-att-framework
   static Future<int> getATTStatus() async {
