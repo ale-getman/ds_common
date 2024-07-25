@@ -156,11 +156,23 @@ abstract class DSMetrica {
     // allow to first start without internet connection
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       unawaited(() async {
-        try {
-          _yandexId = await m.AppMetrica.deviceId ?? '';
-          Fimber.d('yandexId=$yandexId');
-        } on m.DeviceIdRequestException catch (e, stack) {
-          Fimber.e('$e reason=${e.reason}', stacktrace: stack);
+        // AppMetrica has lazy deviceId initialization after app install. Try to fix
+        var exSent = false;
+        for (var i = 0; i < 50; i++) {
+          try {
+            _yandexId = await m.AppMetrica.deviceId ?? '';
+          } on m.DeviceIdRequestException catch (e, stack) {
+            if (!exSent) {
+              exSent = true;
+              Fimber.e('$e reason=${e.reason}', stacktrace: stack);
+            }
+          }
+          if (_yandexId.isNotEmpty) break;
+          await Future.delayed(const Duration(milliseconds: 100));
+        }
+        Fimber.d('yandexId=$yandexId');
+        if (_yandexId.isEmpty) {
+          Fimber.e('yandexId was not initialized', stacktrace: StackTrace.current);
         }
       }());
     }
