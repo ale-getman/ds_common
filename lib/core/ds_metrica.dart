@@ -103,7 +103,7 @@ abstract class DSMetrica {
 
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
-        sessionsAutoTrackingEnabled: !kDebugMode || _debugModeSend,
+        sessionsAutoTracking: !kDebugMode || _debugModeSend,
       ));
 
       if (kDebugMode && !_debugModeSend) {
@@ -160,7 +160,7 @@ abstract class DSMetrica {
         var exSent = false;
         for (var i = 0; i < 50; i++) {
           try {
-            _yandexId = await m.AppMetrica.deviceId ?? '';
+            _yandexId = await m.AppMetrica.requestAppMetricaDeviceID() ?? '';
           } on m.DeviceIdRequestException catch (e, stack) {
             if (!exSent) {
               exSent = true;
