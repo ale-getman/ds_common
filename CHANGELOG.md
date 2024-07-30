@@ -1,3 +1,7 @@
+## 0.1.29
+- revert "update appmetrica_plugin" to 1.x (fix KSCrash dependency build error: demangle.h:19:10: fatal error: 'absl/base/config.h' file not found)
+- add Flutter 3.22 support
+
 ## 0.1.28
 - try to fix DSMetrica.yandexId for first run
 
