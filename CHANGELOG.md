@@ -1,3 +1,6 @@
+## 0.1.30
+- fix DSMetrica UserProfileID initialization
+
 ## 0.1.29
 - revert "update appmetrica_plugin" to 1.x (fix KSCrash dependency build error: demangle.h:19:10: fatal error: 'absl/base/config.h' file not found)
 - add Flutter 3.22 support
