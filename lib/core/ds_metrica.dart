@@ -122,9 +122,14 @@ abstract class DSMetrica {
         break;
       case DSMetricaUserIdType.adjustId:
         Future<void> setAdid() async {
-          final id = await DSAdjust.getAdid();
-          if (id != null) {
-            await DSMetrica.setUserProfileID(id);
+          String? id;
+          for (var i = 0; i < 10; i++) {
+            id = await DSAdjust.getAdid();
+            if (id != null) {
+              await DSMetrica.setUserProfileID(id);
+              break;
+            }
+            await Future.delayed(const Duration(milliseconds: 200));
           }
           Fimber.d('adjustId=$id');
         }
@@ -147,7 +152,7 @@ abstract class DSMetrica {
             throw Exception('Unsupported platform');
           }
           await DSMetrica.setUserProfileID(id);
-          Fimber.d('adjustId=$id');
+          Fimber.d('deviceId=$id');
         } ());
         break;
     }
@@ -160,7 +165,7 @@ abstract class DSMetrica {
         var exSent = false;
         for (var i = 0; i < 50; i++) {
           try {
-            _yandexId = await m.AppMetrica.requestAppMetricaDeviceID() ?? '';
+            _yandexId = await m.AppMetrica.requestAppMetricaDeviceID();
           } on m.DeviceIdRequestException catch (e, stack) {
             if (!exSent) {
               exSent = true;
@@ -203,13 +208,13 @@ abstract class DSMetrica {
 
   /// Report event to AppMetrica and UserX (disabled in debug mode)
   static void reportEvent(
-    String eventName, {
-    bool fbSend = false,
-    Map<String, Object>? attributes,
-    Map<String, Object>? fbAttributes,
-    int stackSkip = 1,
-    EventSendingType eventSendingType = EventSendingType.everyTime,
-  }) =>
+      String eventName, {
+        bool fbSend = false,
+        Map<String, Object>? attributes,
+        Map<String, Object>? fbAttributes,
+        int stackSkip = 1,
+        EventSendingType eventSendingType = EventSendingType.everyTime,
+      }) =>
       reportEventWithMap(
         eventName,
         attributes,
@@ -248,13 +253,13 @@ abstract class DSMetrica {
 
   /// Report event to AppMetrica and UserX (disabled in debug mode)
   static Future<void> reportEventWithMap(
-    String eventName,
-    Map<String, Object>? attributes, {
-    bool fbSend = false,
-    Map<String, Object>? fbAttributes,
-    int stackSkip = 1,
-    EventSendingType eventSendingType = EventSendingType.everyTime,
-  }) async {
+      String eventName,
+      Map<String, Object>? attributes, {
+        bool fbSend = false,
+        Map<String, Object>? fbAttributes,
+        int stackSkip = 1,
+        EventSendingType eventSendingType = EventSendingType.everyTime,
+      }) async {
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
 
     if (eventSendingType == EventSendingType.oncePerAppLifetime && _isEventAlreadySendPerLifetime(eventName)) {
