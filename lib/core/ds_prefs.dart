@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:meta/meta.dart' as meta;
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class DSPrefs extends ChangeNotifier {
   SharedPreferences? _prefs;
