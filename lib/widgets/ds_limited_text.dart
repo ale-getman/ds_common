@@ -46,7 +46,7 @@ class DSLimitedText extends StatelessWidget {
               textDirection: TextDirection.ltr,
             );
             tp.layout(maxWidth: constraints.maxWidth);
-            return tp.height + marginHeight * scale;
+            return tp.height + marginHeight;
           },
           calcSize: maxWidth == null ? null : (context, scale) {
             final textSpan = TextSpan(
@@ -61,7 +61,7 @@ class DSLimitedText extends StatelessWidget {
               textDirection: TextDirection.ltr,
             );
             tp.layout(maxWidth: constraints.maxWidth);
-            final size = Size(tp.width, tp.height + marginHeight * scale);
+            final size = Size(tp.width, tp.height + marginHeight);
             tp.dispose();
             return size;
           },

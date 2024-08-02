@@ -38,6 +38,7 @@ class _DSLimitedBlockState extends State<DSLimitedBlock> {
 
   void invalidateGroup() {
     if (widget.groupId < 0) {
+      _localScale = 0;
       setState(() {});
       return;
     }
@@ -70,11 +71,22 @@ class _DSLimitedBlockState extends State<DSLimitedBlock> {
       if (oldWidget.groupId >= 0) {
         _groups[oldWidget.groupId]?.states.remove(this);
         _groups[oldWidget.groupId]?.scale = 0;
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          final group = _groups[oldWidget.groupId];
+          if (group == null) return;
+          for (final e in group.states) {
+            e.setState(() {});
+          }
+        });
       }
       invalidateGroup();
       if (widget.groupId >= 0) {
-        _groups[widget.groupId]?.states.add(this);
+        _groups[widget.groupId] ??= _GroupInfo();
+        _groups[widget.groupId]!.states.add(this);
       }
+    }
+    if (oldWidget.groupMaxHeight != widget.groupMaxHeight) {
+      invalidateGroup();
     }
   }
 
@@ -91,7 +103,8 @@ class _DSLimitedBlockState extends State<DSLimitedBlock> {
   Widget build(BuildContext context) {
     final _GroupInfo? group;
     if (widget.groupId >= 0) {
-      group = _groups[widget.groupId]!;
+      group = _groups[widget.groupId];
+      if (group == null) return const Text('ds_limited_block with empty group');
       _localScale = group.scale;
     } else {
       group = null;
