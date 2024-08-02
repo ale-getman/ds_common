@@ -111,7 +111,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.1.29"
+    version: "0.1.31"
   fake_async:
     dependency: transitive
     description:

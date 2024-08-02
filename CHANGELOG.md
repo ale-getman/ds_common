@@ -1,3 +1,6 @@
+## 0.1.31
+- fix DSLimitedBlock and DSLimitedText bugs
+
 ## 0.1.30
 - fix DSMetrica UserProfileID initialization
 
