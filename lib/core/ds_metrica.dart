@@ -112,7 +112,6 @@ abstract class DSMetrica {
     } else {
       assert(yandexKey == '', 'yandexKey supports mobile platform only. Remove yandexKey id');
       assert(userXKey == '', 'userXKey supports mobile platform only. Remove userXKey id');
-      //assert(sentryKey == '', 'sentryKey supports mobile platform only. Remove sentryKey id');
     }
 
     await Future.wait(waits);
