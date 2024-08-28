@@ -99,6 +99,9 @@ class DSCrashReportingTree extends LogTree {
       unawaited(Sentry.captureException(
         ex ?? '[$level] $message',
         stackTrace: stacktrace,
+        withScope: (scope) {
+          scope.setTag('user_id_metrica', DSMetrica.yandexId);
+        },
       ));
       final limStack = LimitedStackTrace(
         stackTrace: stacktrace ?? StackTrace.empty,
