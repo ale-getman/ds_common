@@ -1,3 +1,6 @@
+## 0.1.32
+- add user_id_metrica tag to Sentry logging
+
 ## 0.1.31
 - fix DSLimitedBlock and DSLimitedText bugs
 
