@@ -40,7 +40,11 @@ abstract class DSFimberService {
       return true;
     };
 
-    await Firebase.initializeApp(options: firebaseOptions);
+    try {
+      await Firebase.initializeApp(options: firebaseOptions);
+    } catch (e, trace) {
+      Fimber.e('$e', stacktrace: trace);
+    }
 
     if (!kIsWeb) {
       Isolate.current.addErrorListener(RawReceivePort((pair) async {
