@@ -1,3 +1,7 @@
+## 0.1.33
+- add optional property launchDeferredDeeplink to DSAdust.init method
+- add catch to Firebase.initializeApp
+
 ## 0.1.32
 - add user_id_metrica tag to Sentry logging
 
