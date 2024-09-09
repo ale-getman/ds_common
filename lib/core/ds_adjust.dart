@@ -30,6 +30,7 @@ abstract class DSAdjust {
   /// [adjustKey] - API key of Adjust
   static Future<void> init({
     required String adjustKey,
+    bool? launchDeferredDeeplink,
   }) async {
     if (_isInitialized) {
       Fimber.e('DSAdjust is already initialised', stacktrace: StackTrace.current);
@@ -48,6 +49,7 @@ abstract class DSAdjust {
     );
     config.logLevel = AdjustLogLevel.verbose;
     config.attributionCallback = _setAdjustAttribution;
+    config.launchDeferredDeeplink = launchDeferredDeeplink;
     Adjust.start(config);
 
     _isInitialized = true;
