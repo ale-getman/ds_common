@@ -43,14 +43,12 @@ abstract class DSAdjust {
     _widgetsObserver!.appLifecycleState = WidgetsBinding.instance.lifecycleState;
 
     await DSConstants.I.waitForInit();
-    final config = AdjustConfig(adjustKey, DSConstants.I.isInternalVersion
-        ? AdjustEnvironment.sandbox
-        : AdjustEnvironment.production
-    );
+    final config = AdjustConfig(
+        adjustKey, DSConstants.I.isInternalVersion ? AdjustEnvironment.sandbox : AdjustEnvironment.production);
     config.logLevel = AdjustLogLevel.verbose;
     config.attributionCallback = _setAdjustAttribution;
-    config.launchDeferredDeeplink = launchDeferredDeeplink;
-    Adjust.start(config);
+    config.isDeferredDeeplinkOpeningEnabled = launchDeferredDeeplink;
+    Adjust.initSdk(config);
 
     _isInitialized = true;
 
@@ -71,18 +69,18 @@ abstract class DSAdjust {
     required String adRevenueNetwork,
     required String adRevenueUnit,
   }) {
-    final adRevenue = AdjustAdRevenue(AdjustConfig.AdRevenueSourceAdMob);
+    final adRevenue = AdjustAdRevenue('admob_sdk');
     adRevenue.setRevenue(value, currencyCode);
     adRevenue.adRevenueNetwork = adRevenueNetwork;
     adRevenue.adRevenueUnit = adRevenueUnit;
-    Adjust.trackAdRevenueNew(adRevenue);
+    Adjust.trackAdRevenue(adRevenue);
   }
 
   /// Result described in https://github.com/adjust/flutter_sdk/blob/master/README.md#af-att-framework
   static Future<num> requestATT() async {
     if (kIsWeb || !Platform.isIOS) return -1;
     final time = Stopwatch()..start();
-    final res = await Adjust.requestTrackingAuthorizationWithCompletionHandler();
+    final res = await Adjust.requestAppTrackingAuthorization();
     time.stop();
     DSMetrica.reportEvent('AppTrackingTransparency', attributes: {
       'att_result': '$res',
@@ -97,7 +95,7 @@ abstract class DSAdjust {
   /// Result described in https://github.com/adjust/flutter_sdk/blob/master/README.md#af-att-framework
   static Future<int> getATTStatus() async {
     return Adjust.getAppTrackingAuthorizationStatus();
-    }
+  }
 
   /// Add handler for Adjust -> attributionCallback
   static void registerAttributionCallback(DSAttributionCallback callback) {
@@ -117,7 +115,6 @@ abstract class DSAdjust {
     }
     _lastAttribution = data;
   }
-
 }
 
 class _WidgetsObserver with WidgetsBindingObserver {
