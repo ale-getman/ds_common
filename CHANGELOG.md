@@ -1,3 +1,6 @@
+## 0.1.34
+- adjust_sdk updated to 5.0.1+
+
 ## 0.1.33
 - add optional property launchDeferredDeeplink to DSAdust.init method
 - add catch to Firebase.initializeApp
