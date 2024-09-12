@@ -29,7 +29,9 @@ dependencies:
   adjust_sdk: ^5.0.1
 
   # Legacy only (remove in future)
-  device_info: ">=2.0.0 <2.0.3"
+  # device_info: ">=2.0.0 <2.0.3"
+  # replace device_info
+  platform_device_id: ^1.0.1
 
 dev_dependencies:
   flutter_test:

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
 import 'package:decimal/decimal.dart' as d;
-import 'package:device_info/device_info.dart';
+import 'package:platform_device_id/platform_device_id.dart';
 import 'package:ds_common/core/ds_adjust.dart';
 import 'package:ds_common/core/ds_constants.dart';
 import 'package:fimber/fimber.dart';
@@ -141,12 +141,8 @@ abstract class DSMetrica {
       case DSMetricaUserIdType.deviceId:
         unawaited(() async {
           final String id;
-          if (!kIsWeb && Platform.isAndroid) {
-            final info = await DeviceInfoPlugin().androidInfo;
-            id = info.androidId; //UUID for Android
-          } else if (!kIsWeb && Platform.isIOS) {
-            var data = await DeviceInfoPlugin().iosInfo;
-            id = data.identifierForVendor; //UUID for iOS
+          if (!kIsWeb) {
+            id = await PlatformDeviceId.getDeviceId ?? '0';
           } else {
             throw Exception('Unsupported platform');
           }
