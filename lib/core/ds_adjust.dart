@@ -6,7 +6,6 @@ import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 
 import 'ds_constants.dart';
 import 'ds_metrica.dart';
@@ -24,8 +23,6 @@ abstract class DSAdjust {
 
   static final _initCallbacks = <void Function()>{};
 
-  static _WidgetsObserver? _widgetsObserver;
-
   /// Initialize DSAdjust
   /// [adjustKey] - API key of Adjust
   static Future<void> init({
@@ -36,11 +33,6 @@ abstract class DSAdjust {
       Fimber.e('DSAdjust is already initialised', stacktrace: StackTrace.current);
       return;
     }
-
-    assert(_widgetsObserver == null);
-    _widgetsObserver = _WidgetsObserver();
-    WidgetsBinding.instance.addObserver(_widgetsObserver!);
-    _widgetsObserver!.appLifecycleState = WidgetsBinding.instance.lifecycleState;
 
     await DSConstants.I.waitForInit();
     final config = AdjustConfig(
@@ -114,25 +106,5 @@ abstract class DSAdjust {
       callback(data);
     }
     _lastAttribution = data;
-  }
-}
-
-class _WidgetsObserver with WidgetsBindingObserver {
-  AppLifecycleState? appLifecycleState;
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (appLifecycleState == state) return;
-    appLifecycleState = state;
-    switch (state) {
-      case AppLifecycleState.resumed:
-        Adjust.onResume();
-        break;
-      case AppLifecycleState.paused:
-        Adjust.onPause();
-        break;
-      default:
-        break;
-    }
   }
 }
