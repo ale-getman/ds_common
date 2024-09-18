@@ -1,3 +1,7 @@
+## 0.1.35
+- update appmetrica_plugin (appmetrica 1.x not works with new projects; need to recheck KSCrash dependency build error: demangle.h:19:10: fatal error: 'absl/base/config.h' file not found)
+- update firebase dependencies
+
 ## 0.1.34
 - adjust_sdk updated to 5.0.1+
 
