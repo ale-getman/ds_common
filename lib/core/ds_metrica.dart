@@ -120,23 +120,6 @@ abstract class DSMetrica {
       case DSMetricaUserIdType.none:
         break;
       case DSMetricaUserIdType.adjustId:
-        Future<void> setAdid() async {
-          String? id;
-          for (var i = 0; i < 10; i++) {
-            id = await DSAdjust.getAdid();
-            if (id != null) {
-              await DSMetrica.setUserProfileID(id);
-              break;
-            }
-            await Future.delayed(const Duration(milliseconds: 200));
-          }
-          Fimber.d('adjustId=$id');
-        }
-        if (DSAdjust.isInitialized) {
-          unawaited(setAdid());
-        } else {
-          DSAdjust.addAfterInitCallback(() => setAdid());
-        }
         break;
       case DSMetricaUserIdType.deviceId:
         unawaited(() async {
@@ -155,6 +138,28 @@ abstract class DSMetrica {
         } ());
         break;
     }
+
+    DSAdjust.registerAttributionCallback((data) {
+      final adid = DSAdjust.getAdid();
+      if (_userIdType == DSMetricaUserIdType.adjustId && adid != null) {
+        unawaited(DSMetrica.setUserProfileID(adid));
+      }
+      Fimber.d('DSMetrica updated by Adjust adid=$adid');
+      unawaited(m.AppMetrica.reportExternalAttribution(m.AppMetricaExternalAttribution.adjust(
+        adid: adid,
+        trackerName: data.trackerName,
+        trackerToken: data.trackerToken,
+        network: data.network,
+        campaign: data.campaign,
+        adgroup: data.adgroup,
+        creative: data.creative,
+        clickLabel: data.clickLabel,
+        costType: data.costType,
+        costAmount: data.costAmount,
+        costCurrency: data.costCurrency,
+        fbInstallReferrer: data.fbInstallReferrer,
+      )));
+    });
 
     _isInitialized = true;
     // allow to first start without internet connection

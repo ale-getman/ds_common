@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:adjust_sdk/adjust.dart';
@@ -17,6 +18,7 @@ typedef DSAttributionCallback = void Function(DSAdjustAttribution data);
 abstract class DSAdjust {
   static var _isInitialized = false;
   static bool get isInitialized => _isInitialized;
+  static String? _adId;
 
   static final _attributionCallbacks = <DSAttributionCallback>{};
   static DSAdjustAttribution? _lastAttribution;
@@ -43,6 +45,9 @@ abstract class DSAdjust {
     Adjust.initSdk(config);
 
     _isInitialized = true;
+
+    // init adid
+    getAdid();
 
     for (final callback in _initCallbacks) {
       callback();
@@ -82,7 +87,28 @@ abstract class DSAdjust {
     return res;
   }
 
-  static Future<String?> getAdid() => Adjust.getAdid();
+  static Future<void> Function()? _adidUpdater;
+
+  static String? getAdid() {
+    if (_adidUpdater == null) {
+      // Если никто не запрашивал получение Adid, то дожидаюсь получения от Adjust значения
+      var delay = const Duration(milliseconds: 100);
+      _adidUpdater = () async {
+        while (_adId == null) {
+          _adId = await Adjust.getAdid();
+          if (_lastAttribution != null) {
+            _setAdjustAttribution(_lastAttribution!);
+          }
+          if (_adId != null) break;
+          delay = delay * 2;
+          await Future.delayed(delay);
+        }
+      };
+      unawaited(_adidUpdater!());
+    }
+    // Возвращаю сейчас то, что есть (null или реальное)
+    return _adId;
+  }
 
   /// Result described in https://github.com/adjust/flutter_sdk/blob/master/README.md#af-att-framework
   static Future<int> getATTStatus() async {
