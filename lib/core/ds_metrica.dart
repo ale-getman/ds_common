@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
 import 'package:decimal/decimal.dart' as d;
 import 'package:device_info/device_info.dart';
-import 'package:ds_common/core/ds_adjust.dart';
-import 'package:ds_common/core/ds_constants.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
@@ -13,6 +11,8 @@ import 'package:flutter/widgets.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:userx_flutter/userx_flutter.dart';
 
+import 'ds_adjust.dart';
+import 'ds_constants.dart';
 import 'ds_logging.dart';
 import 'ds_prefs.dart';
 import 'ds_remote_config.dart';
