@@ -7,6 +7,7 @@ export 'core/ds_logging.dart';
 export 'core/ds_metrica.dart';
 export 'core/ds_prefs.dart';
 export 'core/ds_primitives.dart';
+export 'core/ds_referrer.dart';
 export 'core/ds_remote_config.dart';
 export 'widgets/ds_limited_block.dart';
 export 'widgets/ds_limited_text.dart';

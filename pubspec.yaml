@@ -4,8 +4,8 @@ version: 0.1.36
 repository: https://github.com/al-tush/ds_common
 
 environment:
-  sdk: ">=2.17.6 <4.0.0"
-  flutter: ">=3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
@@ -24,8 +24,10 @@ dependencies:
   decimal: ^2.3.0
   package_info_plus: ^4.0.2
   firebase_remote_config: ">=4.0.0 <7.0.0"
+  firebase_app_installations: ">=0.2.0 <0.4.0"
   firebase_analytics: ">=10.0.0 <12.0.0"
-
+  cloud_functions: ">=4.0.0 <6.0.0"
+  cloud_firestore: ">=4.0.0 <6.0.0"
   adjust_sdk: ^5.0.1
 
   # Legacy only (remove in future)
