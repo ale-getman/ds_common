@@ -1,3 +1,6 @@
+## 0.1.38
+- add default values to DSRemoteConfig
+
 ## 0.1.37
 - add DSReferrer class to install referrer detection
 - automatically set '_d' postfix in DSRemoteConfig
