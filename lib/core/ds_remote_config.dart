@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:ds_common/ds_common.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+
+import 'ds_constants.dart';
+import 'ds_metrica.dart';
 
 class DSRemoteConfig {
   final _remoteConfig = FirebaseRemoteConfig.instance;
@@ -31,6 +33,7 @@ class DSRemoteConfig {
   }) {
     assert(_instance == null);
     _instance = this;
+
     unawaited(() async {
       final startTime = DateTime.now();
       await _remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -89,13 +92,22 @@ class DSRemoteConfig {
     }
   }
 
+  String get prefix => _prefix;
+  String get postfix {
+    if (DSConstants.I.isInternalVersionOpt) return '_d';
+    return _postfix;
+  }
+
   void setPrefix(String value) => _prefix = value;
-  void setPostfix(String value) => _postfix = value;
+  void setPostfix(String value) {
+    assert(value == '_d' || !DSConstants.I.isInternalVersionOpt, 'Currently only _d postfix supported for internal versions');
+    _postfix = value;
+  }
 
   String? _getKey(String key) {
     final all = _remoteConfig.getAll();
-    if (_prefix.isNotEmpty || _postfix.isNotEmpty) {
-      final sKey = '$_prefix$key$_postfix';
+    if (prefix.isNotEmpty || postfix.isNotEmpty) {
+      final sKey = '$prefix$key$postfix';
       if (all.containsKey(sKey)) return sKey;
     }
     if (all.containsKey(key)) return key;
