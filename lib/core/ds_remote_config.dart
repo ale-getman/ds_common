@@ -111,29 +111,37 @@ class DSRemoteConfig {
       if (all.containsKey(sKey)) return sKey;
     }
     if (all.containsKey(key)) return key;
-    return '';
+    return null;
   }
 
-  bool getBool(String key) {
+  /// Gets the value for a given [key] as a bool.
+  /// Returns [defVal] if the [key] does not exist.
+  bool getBool(String key, {bool defVal = false}) {
     final k = _getKey(key);
-    if (k == null) return false;
+    if (k == null) return defVal;
     return _remoteConfig.getBool(k);
   }
 
-  int getInt(String key) {
+  /// Gets the value for a given [key] as an int.
+  /// Returns [defVal] if the [key] does not exist.
+  int getInt(String key, {int defVal = 0}) {
     final k = _getKey(key);
-    if (k == null) return 0;
+    if (k == null) return defVal;
     return _remoteConfig.getInt(k);
   }
 
-  String getString(String key) {
+  /// Gets the value for a given [key] as a String.
+  /// Returns [defVal] if the [key] does not exist.
+  String getString(String key, {String defVal = ''}) {
     final k = _getKey(key);
-    if (k == null) return '';
+    if (k == null) return defVal;
     return _remoteConfig.getString(k);
   }
 
-  Duration getDuration(String key) {
-    var res = getInt(key);
+  /// Gets the value for a given [key] as a Duration.
+  /// Returns [defVal] if the [key] does not exist.
+  Duration getDuration(String key, {Duration defVal = const Duration(seconds: 0)}) {
+    var res = getInt(key, defVal: defVal.inSeconds);
     if (res < 0) {
       res = 0;
     }
