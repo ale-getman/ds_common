@@ -1,3 +1,7 @@
+## 0.1.37
+- add DSReferrer class to install referrer detection
+- automatically set '_d' postfix in DSRemoteConfig
+
 ## 0.1.36
 - changed Adjust.adid initialization
 - add Adjust attribution to AppMetrica
