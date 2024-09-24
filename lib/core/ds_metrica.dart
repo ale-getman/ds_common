@@ -26,6 +26,8 @@ typedef UserProfile = m.UserProfile;
 typedef StringAttribute = m.StringAttribute;
 typedef AppMetricaErrorDescription = m.AppMetricaErrorDescription;
 
+typedef DSMetricaAttrsCallback = Map<String, Object> Function();
+
 enum EventSendingType { everyTime, oncePerAppLifetime }
 
 enum DSMetricaUserIdType {
@@ -52,7 +54,8 @@ abstract class DSMetrica {
   static var _previousScreenName = '';
 
   static final _persistentAttrs = <String, Object>{};
-  static Map<String, Object> Function()? _persistentAttrsHandler;
+  static DSMetricaAttrsCallback? _attrsHandlerOld;
+  static final  _attrsHandlers = <DSMetricaAttrsCallback>{};
   static var _isInitialized = false;
 
   static var _userIdType = DSMetricaUserIdType.none;
@@ -281,7 +284,10 @@ abstract class DSMetrica {
       final baseAttrs = <String, Object>{};
       baseAttrs.addAll(_persistentAttrs);
 
-      baseAttrs.addAll(_persistentAttrsHandler?.call() ?? {});
+      baseAttrs.addAll(_attrsHandlerOld?.call() ?? {});
+      for (final handler in _attrsHandlers) {
+        baseAttrs.addAll(handler());
+      }
 
       if (DSReferrer.isInitialized) {
         // Add referrer's attributes
@@ -431,9 +437,20 @@ abstract class DSMetrica {
     _persistentAttrs.addAll(attrs);
   }
 
+  @Deprecated('Use addAttrsHandler instead and note than `is_premium` attribute is automatically added by ds_purchase')
   /// Calculate attributes to send it in every [reportEvent]
-  static void setPersistentAttrsHandler(Map<String, Object> Function() handler) {
-    _persistentAttrsHandler = handler;
+  static void setPersistentAttrsHandler(DSMetricaAttrsCallback handler) {
+    _attrsHandlerOld = handler;
+  }
+
+  /// Add [handler] to calculate attributes to send it in every [reportEvent]
+  static void registerAttrsHandler(DSMetricaAttrsCallback handler) {
+    _attrsHandlers.add(handler);
+  }
+
+  /// Remove [handler] which was added by [registerAttrsHandler]
+  static void unregisterAttrsHandler(DSMetricaAttrsCallback handler) {
+    _attrsHandlers.remove(handler);
   }
 
   /// Send yandex Id to Firebase if it was not send
