@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
 import 'package:decimal/decimal.dart' as d;
 import 'package:device_info/device_info.dart';
+import 'package:ds_common/core/ds_primitives.dart';
+import 'package:ds_common/core/ds_referrer.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
@@ -280,6 +282,24 @@ abstract class DSMetrica {
       baseAttrs.addAll(_persistentAttrs);
 
       baseAttrs.addAll(_persistentAttrsHandler?.call() ?? {});
+
+      if (DSReferrer.isInitialized) {
+        // Add referrer's attributes
+        final data = DSReferrer.I.getReferrerFields();
+        void addFromData(String key) {
+          data[key]?.let((value) {
+            baseAttrs[key] = value;
+          });
+        }
+        if (Platform.isIOS) {
+          addFromData('partner');
+        } else {
+          addFromData('utm_source');
+          addFromData('utm_campaign');
+          addFromData('utm_medium');
+          addFromData('gclid');
+        }
+      }
 
       DSPrefs.I.setAppLastUsed(DateTime.now());
       final sessionId = DSPrefs.I.getSessionId();

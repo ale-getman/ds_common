@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_app_installations/firebase_app_installations.dart';
+import 'package:meta/meta.dart';
 
 import 'ds_constants.dart';
 import 'ds_internal.dart';
@@ -198,34 +199,6 @@ class DSReferrer {
     final utmSource = data['utm_source'];
     if (utmSource == null) return false;
     return _ourReferrerPattern.hasMatch(utmSource);
-  }
-
-  /// Prepare referrer fields to send to DSMetrica report.
-  /// Example:
-  ///     DSMetrica.setPersistentAttrsHandler(() {
-  //       return {
-  //         'is_premium': DSPurchaseManager.I.isPremium,
-  //         ...DSReferrer.I.getMetricaEventAttrs(),
-  //       };
-  //     });
-  Map<String, Object> getMetricaEventAttrs() {
-    final res = <String, String?>{};
-    final data = getReferrerFields();
-    void addFromData(String key) {
-      if (data.containsKey(key)) {
-        res[key] = data[key];
-      }
-    }
-
-    if (Platform.isIOS) {
-      addFromData('partner');
-    } else {
-      addFromData('utm_source');
-      addFromData('utm_campaign');
-      addFromData('utm_medium');
-      addFromData('gclid');
-    }
-    return res.map((key, value) => MapEntry(key, value as Object));
   }
 
   String get adjustExternalClickId => getReferrerFields()['adjust_external_click_id'] ?? '';
