@@ -1,3 +1,8 @@
+## 0.1.39
+- change DSReferrer.isKnownReferrer() conditions
+- add DSMetrica.registerAttrsHandler instead of setPersistentAttrsHandler
+- move DSReferrer.getMetricaEventAttrs() to internal DSMetrica implementation
+
 ## 0.1.38
 - add default values to DSRemoteConfig
 
