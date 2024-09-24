@@ -180,8 +180,8 @@ class DSReferrer {
         return false;
       }
 
+      if ((data['gclid'] ?? '').isNotEmpty) return true;
       final utmSource = data['utm_source'] ?? '';
-      if (utmSource == '' && (data['gclid'] != '')) return true;
       if (_ourReferrerPattern.hasMatch(utmSource)) return true;
       if (utmSource.contains('apps.facebook.com') || utmSource.contains('apps.instagram.com')) return true;
       if (adjustExternalClickId.isNotEmpty) return true;
