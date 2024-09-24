@@ -14,7 +14,7 @@ import 'ds_remote_config.dart';
 
 typedef DSReferrerCallback = void Function(Map<String, String> fields);
 
-/// [DSReferrer] helps to separate organic and partner trafic.
+/// [DSReferrer] helps to separate organic and partner traffic.
 /// Also it send referrer data to Firebase collection installs_full_referrer and DSMetrica statistics.
 class DSReferrer {
   static var _isInitialized = false;
@@ -183,7 +183,8 @@ class DSReferrer {
       final utmSource = data['utm_source'] ?? '';
       if (utmSource == '' && (data['gclid'] != '')) return true;
       if (_ourReferrerPattern.hasMatch(utmSource)) return true;
-      if (utmSource == 'apps.facebook.com' && data['utm_campaign'] == 'fb4a') return true;
+      if (utmSource.contains('apps.facebook.com') || utmSource.contains('apps.instagram.com')) return true;
+      if (adjustExternalClickId.isNotEmpty) return true;
 
       return false;
     } catch (e, stack) {
