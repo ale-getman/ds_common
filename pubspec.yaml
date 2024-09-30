@@ -4,8 +4,8 @@ version: 0.1.39
 repository: https://github.com/al-tush/ds_common
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.10.0"
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
 
 dependencies:
   flutter:
@@ -18,11 +18,11 @@ dependencies:
   firebase_core: ">=2.3.0 <5.0.0"
   firebase_crashlytics: ">=3.2.0 <6.0.0"
   shared_preferences: ^2.0.17
-  userx_flutter: ^1.1.2
+  userx_flutter: ^1.3.0
   appmetrica_plugin: ^3.1.0
   sentry_flutter: ^8.4.0
-  package_info_plus: ^4.0.2
   decimal: ^3.0.2
+  package_info_plus: ^8.0.0
   firebase_remote_config: ">=4.0.0 <7.0.0"
   firebase_app_installations: ">=0.2.0 <0.4.0"
   firebase_analytics: ">=10.0.0 <12.0.0"
@@ -36,7 +36,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
   tuple: ^2.0.1
 
 flutter:
