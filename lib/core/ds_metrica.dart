@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
-import 'package:decimal/decimal.dart' as d;
 import 'package:device_info/device_info.dart';
 import 'package:ds_common/core/ds_primitives.dart';
 import 'package:ds_common/core/ds_referrer.dart';
@@ -16,15 +15,9 @@ import 'package:userx_flutter/userx_flutter.dart';
 import 'ds_adjust.dart';
 import 'ds_constants.dart';
 import 'ds_logging.dart';
+import 'ds_metrica_types.dart';
 import 'ds_prefs.dart';
 import 'ds_remote_config.dart';
-
-typedef AdRevenue = m.AdRevenue;
-typedef AdType = m.AdType;
-typedef Decimal = d.Decimal;
-typedef UserProfile = m.UserProfile;
-typedef StringAttribute = m.StringAttribute;
-typedef AppMetricaErrorDescription = m.AppMetricaErrorDescription;
 
 typedef DSMetricaAttrsCallback = Map<String, Object> Function();
 
@@ -175,10 +168,10 @@ abstract class DSMetrica {
         for (var i = 0; i < 50; i++) {
           try {
             _yandexId = await m.AppMetrica.deviceId ?? '';
-          } on m.DeviceIdRequestException catch (e, stack) {
+          } catch (e, stack) {
             if (!exSent) {
               exSent = true;
-              Fimber.e('$e reason=${e.reason}', stacktrace: stack);
+              Fimber.e('$e', stacktrace: stack);
             }
           }
           if (_yandexId.isNotEmpty) break;

@@ -7,6 +7,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'ds_logging.dart';
 import 'ds_metrica.dart';
+import 'ds_metrica_types.dart';
 
 class DSDebugTree extends DebugTree {
 
