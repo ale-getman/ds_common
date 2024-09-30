@@ -1,3 +1,8 @@
+## 1.0.0
+BREAKING CHANGES: 
+- update to AppMetrica 3.1 (fix iOS ITMS-91107 https://t.me/appmetrica_chat/50255)
+- update dependencies
+
 ## 0.1.39
 - change DSReferrer.isKnownReferrer() conditions
 - add DSMetrica.registerAttrsHandler instead of setPersistentAttrsHandler
