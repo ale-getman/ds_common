@@ -137,29 +137,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
-  device_info:
-    dependency: transitive
-    description:
-      name: device_info
-      sha256: "8f07d3647ec6025dcc5f56c4c9a749257e1389774361aa999e2b4fc7dd6f3ded"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.2"
-  device_info_platform_interface:
-    dependency: transitive
-    description:
-      name: device_info_platform_interface
-      sha256: b148e0bf9640145d09a4f8dea96614076f889e7f7f8b5ecab1c7e5c2dbc73c1b
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.1"
   ds_common:
     dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.1.39"
+    version: "1.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -710,4 +694,4 @@ packages:
     version: "1.0.0"
 sdks:
   dart: ">=3.3.0 <4.0.0"
-  flutter: ">=3.19.0"
+  flutter: ">=3.22.0"
