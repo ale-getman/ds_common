@@ -30,9 +30,6 @@ dependencies:
   cloud_firestore: ">=4.0.0 <6.0.0"
   adjust_sdk: ^5.0.1
 
-  # Legacy only (remove in future)
-  device_info: ">=2.0.0 <2.0.3"
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

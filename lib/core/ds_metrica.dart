@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
-import 'package:device_info/device_info.dart';
 import 'package:ds_common/core/ds_primitives.dart';
 import 'package:ds_common/core/ds_referrer.dart';
 import 'package:fimber/fimber.dart';
@@ -14,6 +13,7 @@ import 'package:userx_flutter/userx_flutter.dart';
 
 import 'ds_adjust.dart';
 import 'ds_constants.dart';
+import 'ds_internal.dart';
 import 'ds_logging.dart';
 import 'ds_metrica_types.dart';
 import 'ds_prefs.dart';
@@ -121,16 +121,7 @@ abstract class DSMetrica {
         break;
       case DSMetricaUserIdType.deviceId:
         unawaited(() async {
-          final String id;
-          if (!kIsWeb && Platform.isAndroid) {
-            final info = await DeviceInfoPlugin().androidInfo;
-            id = info.androidId; //UUID for Android
-          } else if (!kIsWeb && Platform.isIOS) {
-            var data = await DeviceInfoPlugin().iosInfo;
-            id = data.identifierForVendor; //UUID for iOS
-          } else {
-            throw Exception('Unsupported platform');
-          }
+          final id = await getDeviceId();
           await DSMetrica.setUserProfileID(id);
           Fimber.d('deviceId=$id');
         } ());
@@ -206,6 +197,16 @@ abstract class DSMetrica {
       stackSkip: stackSkip + 1,
       eventSendingType: EventSendingType.oncePerAppLifetime,
     );
+  }
+
+  /// Get legacy device id. Recommended to use other ID instead
+  static Future<String> getDeviceId() async {
+    if (kIsWeb) {
+      throw Exception('Unsupported platform');
+    }
+    return await DSInternal.platform.invokeMethod('getDeviceId');
+    // final info = await DeviceInfoPlugin().androidInfo;
+    // id = info.androidId; //UUID for Android
   }
 
   /// Report event to AppMetrica and UserX (disabled in debug mode)

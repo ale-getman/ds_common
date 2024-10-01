@@ -1,14 +1,15 @@
 package pro.altush.ds_common
 
+import android.annotation.SuppressLint
 import android.content.Context
-
+import android.provider.Settings
+import com.android.installreferrer.api.InstallReferrerClient
+import com.android.installreferrer.api.InstallReferrerStateListener
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import com.android.installreferrer.api.InstallReferrerClient
-import com.android.installreferrer.api.InstallReferrerStateListener
 
 /** DsCommonPlugin */
 class DsCommonPlugin: FlutterPlugin, MethodCallHandler {
@@ -21,7 +22,17 @@ class DsCommonPlugin: FlutterPlugin, MethodCallHandler {
         channel.setMethodCallHandler(this)
     }
 
+    @SuppressLint("HardwareIds")
     override fun onMethodCall(call: MethodCall, result: Result) {
+        when (call.method) {
+            "fetchInstallReferrer" -> fetchInstallReferrer(result)
+            "getDeviceId" -> try {
+                result.success(Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID))
+            } catch (e: Throwable) {
+                result.error("getDeviceId native error: ${e.message}", null, null)
+            }
+            else -> result.notImplemented()
+        }
         if (call.method == "fetchInstallReferrer") {
             fetchInstallReferrer(result)
         } else {
