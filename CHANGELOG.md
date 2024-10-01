@@ -1,3 +1,7 @@
+## 1.0.1
+- remove device_info dependency (use DSMetrica.getDeviceId() to access to legacy device id)
+- fix Flutter 3.24 release build
+
 ## 1.0.0
 BREAKING CHANGES: 
 - update to AppMetrica 3.1 (fix iOS ITMS-91107 https://t.me/appmetrica_chat/50255)
