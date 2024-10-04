@@ -1,3 +1,7 @@
+## 1.0.4
+- extend Android native DSMetrica functionality
+- minimum Flutter version is 3.24
+
 ## 1.0.3
 - fix fetchInstallReferrer call
 
