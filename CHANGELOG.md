@@ -1,3 +1,6 @@
+## 1.0.3
+- fix fetchInstallReferrer call
+
 ## 1.0.2
 - add Android native DSMetrica and DSTimber classes (unifying native code)
 
