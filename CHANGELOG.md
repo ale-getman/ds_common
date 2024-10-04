@@ -1,3 +1,6 @@
+## 1.0.2
+- add Android native DSMetrica and DSTimber classes (unifying native code)
+
 ## 1.0.1
 - remove device_info dependency (use DSMetrica.getDeviceId() to access to legacy device id)
 - fix Flutter 3.24 release build
