@@ -25,7 +25,9 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    namespace = "pro.altush.ds_common"
+    if (project.android.hasProperty("namespace")) {
+        namespace "pro.altush.ds_common"
+    }
     compileSdkVersion 34
 
     compileOptions {
