@@ -33,11 +33,6 @@ class DsCommonPlugin: FlutterPlugin, MethodCallHandler {
             }
             else -> result.notImplemented()
         }
-        if (call.method == "fetchInstallReferrer") {
-            fetchInstallReferrer(result)
-        } else {
-            result.notImplemented()
-        }
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
