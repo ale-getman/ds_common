@@ -4,8 +4,8 @@ import android.app.Activity
 import android.content.Context
 import io.flutter.app.FlutterApplication
 
-import com.yandex.metrica.YandexMetrica
-import com.yandex.metrica.YandexMetricaConfig
+import io.appmetrica.analytics.AppMetrica;
+import io.appmetrica.analytics.AppMetricaConfig
 import timber.log.Timber
 
 class DSMetrica {
@@ -20,14 +20,14 @@ class DSMetrica {
             }
             isInitialized = true
             contextCallback = { app.applicationContext }
-            val config = YandexMetricaConfig.newConfigBuilder(metricaKey)
+            val config = AppMetricaConfig.newConfigBuilder(metricaKey)
             if (BuildConfig.DEBUG) {
                 config.withSessionsAutoTrackingEnabled(false)
             }
-            YandexMetrica.activate(app.applicationContext, config.build())
-            YandexMetrica.enableActivityAutoTracking(app)
+            AppMetrica.activate(app.applicationContext, config.build())
+            AppMetrica.enableActivityAutoTracking(app)
             if (BuildConfig.DEBUG) {
-                YandexMetrica.pauseSession(null)
+                AppMetrica.pauseSession(null)
             }
         }
 
@@ -38,7 +38,7 @@ class DSMetrica {
         fun reportAppOpen(activity: Activity) {
             Timber.d("DSMetrica: report app open")
             if (BuildConfig.DEBUG) return
-            YandexMetrica.reportAppOpen(activity)
+            AppMetrica.reportAppOpen(activity)
         }
 
         fun reportEvent(eventName: String, attributes: Map<String, Any>? = null) {
@@ -57,7 +57,7 @@ class DSMetrica {
 
                 if (BuildConfig.DEBUG) return
 
-                YandexMetrica.reportEvent(eventName, attrs)
+                AppMetrica.reportEvent(eventName, attrs)
             } catch (e: Throwable) {
                 if (!reportEventError) {
                     reportEventError = true

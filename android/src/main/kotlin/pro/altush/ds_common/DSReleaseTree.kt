@@ -3,7 +3,7 @@ package pro.altush.ds_common
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 //import com.google.firebase.crashlytics.ktx.setCustomKeys
-import com.yandex.metrica.YandexMetrica
+import io.appmetrica.analytics.AppMetrica
 import timber.log.Timber
 
 class DSReleaseTree : Timber.Tree() {
@@ -21,7 +21,7 @@ class DSReleaseTree : Timber.Tree() {
 //                key("message", message)
 //            }
             crashlytics.recordException(e)
-            YandexMetrica.reportError(message, e)
+            AppMetrica.reportError(message, e)
         }
     }
 
