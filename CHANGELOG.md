@@ -1,3 +1,6 @@
+## 1.0.5
+- Sentry removed (temporary)
+
 ## 1.0.4
 - extend Android native DSMetrica functionality
 - minimum Flutter version is 3.24
