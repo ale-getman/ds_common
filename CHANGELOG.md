@@ -1,3 +1,6 @@
+## 1.0.6
+- sync Android native to Flutter code (package com.yandex.metrica replaced to io.appmetrica.analytics)
+
 ## 1.0.5
 - Sentry removed (temporary)
 
