@@ -8,7 +8,6 @@ import 'package:fimber/fimber.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:userx_flutter/userx_flutter.dart';
 
 import 'ds_adjust.dart';
@@ -64,7 +63,7 @@ abstract class DSMetrica {
   /// Initialize DSMetrica. Must call before the first use
   /// [yandexKey] - API key of Yandex App Metrica
   /// [userXKey] - API key of UserX
-  /// [sentryKey] - API key of Sentry
+  /// [sentryKey] - API key of Sentry (NOT USED)
   /// [forceSend] - send events in debug mode too
   static Future<void> init({
     required String yandexKey,
@@ -86,18 +85,18 @@ abstract class DSMetrica {
 
     WidgetsFlutterBinding.ensureInitialized();
 
-    if (sentryKey.isNotEmpty && (!kDebugMode || _debugModeSend)) {
-      waits.add(() async {
-        await SentryFlutter.init(
-              (options) {
-            options.dsn = sentryKey;
-            options.diagnosticLevel = kDebugMode ? SentryLevel.debug : SentryLevel.warning;
-            options.tracesSampleRate = 1.0;
-            options.profilesSampleRate = 1.0;
-          },
-        );
-      } ());
-    }
+    // if (sentryKey.isNotEmpty && (!kDebugMode || _debugModeSend)) {
+    //   waits.add(() async {
+    //     await SentryFlutter.init(
+    //           (options) {
+    //         options.dsn = sentryKey;
+    //         options.diagnosticLevel = kDebugMode ? SentryLevel.debug : SentryLevel.warning;
+    //         options.tracesSampleRate = 1.0;
+    //         options.profilesSampleRate = 1.0;
+    //       },
+    //     );
+    //   } ());
+    // }
 
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,

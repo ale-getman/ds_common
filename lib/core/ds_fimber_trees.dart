@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:fimber/fimber.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'ds_logging.dart';
 import 'ds_metrica.dart';
@@ -97,13 +96,13 @@ class DSCrashReportingTree extends LogTree {
             ? AppMetricaErrorDescription(stacktrace, message: message, type: '[$level]')
             : null,
       ));
-      unawaited(Sentry.captureException(
-        ex ?? '[$level] $message',
-        stackTrace: stacktrace,
-        withScope: (scope) {
-          scope.setTag('user_id_metrica', DSMetrica.yandexId);
-        },
-      ));
+      // unawaited(Sentry.captureException(
+      //   ex ?? '[$level] $message',
+      //   stackTrace: stacktrace,
+      //   withScope: (scope) {
+      //     scope.setTag('user_id_metrica', DSMetrica.yandexId);
+      //   },
+      // ));
       final limStack = LimitedStackTrace(
         stackTrace: stacktrace ?? StackTrace.empty,
         deep: 4,
