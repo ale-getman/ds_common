@@ -399,8 +399,8 @@ abstract class DSMetrica {
     }
 
     // if yandexId is empty (or non-valid) use simple random
-    final yid = BigInt.tryParse(yandexId) ?? BigInt.from(Random().nextInt(100));
-    if ((yid % BigInt.from(100)).toInt() < val) {
+    final yid = int.tryParse(yandexId.let((s) => s.length >= 2 ? s.substring(s.length - 2) : s)) ?? Random().nextInt(100);
+    if ((yid % 100).toInt() < val) {
       await DSMetrica.startUserX();
     }
   }
