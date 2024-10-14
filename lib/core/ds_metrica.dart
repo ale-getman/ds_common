@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
 import 'package:ds_common/core/ds_primitives.dart';
@@ -397,7 +398,8 @@ abstract class DSMetrica {
       return;
     }
 
-    final yid = BigInt.tryParse(yandexId) ?? BigInt.from(yandexId.hashCode);
+    // if yandexId is empty (or non-valid) use simple random
+    final yid = BigInt.tryParse(yandexId) ?? BigInt.from(Random().nextInt(100));
     if ((yid % BigInt.from(100)).toInt() < val) {
       await DSMetrica.startUserX();
     }
