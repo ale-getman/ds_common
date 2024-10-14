@@ -1,3 +1,6 @@
+## 1.0.7
+- fix userx_percent usage https://app.asana.com/0/1208203354836323/1208334659694747/f
+
 ## 1.0.6
 - sync Android native to Flutter code (package com.yandex.metrica replaced to io.appmetrica.analytics)
 
