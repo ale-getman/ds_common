@@ -357,7 +357,7 @@ abstract class DSMetrica {
   }
 
   /// AppMetrica wrapper
-  static Future<void> reportAdRevenue(AdRevenue revenue) async {
+  static Future<void> reportAdRevenue(AppMetricaAdRevenue revenue) async {
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
     await m.AppMetrica.reportAdRevenue(revenue);
   }
