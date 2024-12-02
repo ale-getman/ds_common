@@ -1,3 +1,6 @@
+## 1.1.0
+- integrate Fimber with attributes extensions into ds_common library #4 https://app.asana.com/0/1208203354836323/1208312050177353/f
+
 ## 1.0.9
 - add unsupported types check by DSMetrica in kDebugMode
 
