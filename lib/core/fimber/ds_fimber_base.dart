@@ -14,7 +14,7 @@ class Fimber {
     StackTrace? stacktrace,
     Map<String, String?>? attributes,
   }) {
-    log("V", message, ex: ex, stacktrace: stacktrace, attributes: attributes);
+    log('V', message, ex: ex, stacktrace: stacktrace, attributes: attributes);
   }
 
   /// Logs DEBUG level [message]
@@ -25,7 +25,7 @@ class Fimber {
     StackTrace? stacktrace,
     Map<String, String?>? attributes,
   }) {
-    log("D", message, ex: ex, stacktrace: stacktrace, attributes: attributes);
+    log('D', message, ex: ex, stacktrace: stacktrace, attributes: attributes);
   }
 
   /// Logs INFO level [message]
@@ -36,7 +36,7 @@ class Fimber {
     StackTrace? stacktrace,
     Map<String, String?>? attributes,
   }) {
-    log("I", message, ex: ex, stacktrace: stacktrace, attributes: attributes);
+    log('I', message, ex: ex, stacktrace: stacktrace, attributes: attributes);
   }
 
   /// Logs WARNING level [message]
@@ -47,7 +47,7 @@ class Fimber {
     StackTrace? stacktrace,
     Map<String, String?>? attributes,
   }) {
-    log("W", message, ex: ex, stacktrace: stacktrace, attributes: attributes);
+    log('W', message, ex: ex, stacktrace: stacktrace, attributes: attributes);
   }
 
   /// Logs ERROR level [message]
@@ -58,7 +58,7 @@ class Fimber {
     StackTrace? stacktrace,
     Map<String, String?>? attributes,
   }) {
-    log("E", message, ex: ex, stacktrace: stacktrace, attributes: attributes);
+    log('E', message, ex: ex, stacktrace: stacktrace, attributes: attributes);
   }
 
   /// Mute a log [level] for logging.
@@ -167,7 +167,7 @@ typedef RunWithLog = dynamic Function(FimberLog log);
 /// Debug log tree. Tag generation included
 class DebugTree extends LogTree {
   /// Default levels for logging a debug.
-  static const List<String> defaultLevels = ["D", "I", "W", "E"];
+  static const List<String> defaultLevels = ['D', 'I', 'W', 'E'];
 
   /// Elapsed time type tracking for logging
   static const int timeElapsedType = 0;
@@ -175,13 +175,13 @@ class DebugTree extends LogTree {
   /// Actual clock time type tracking for logging
   static const int timeClockType = 1;
   static final Map<String, ColorizeStyle> _defaultColorizeMap = {
-    "V": ColorizeStyle([AnsiStyle.foreground(AnsiColor.blue)]),
-    "D": ColorizeStyle([AnsiStyle.foreground(AnsiColor.green)]),
-    "W": ColorizeStyle([
+    'V': ColorizeStyle([AnsiStyle.foreground(AnsiColor.blue)]),
+    'D': ColorizeStyle([AnsiStyle.foreground(AnsiColor.green)]),
+    'W': ColorizeStyle([
       AnsiStyle.foreground(AnsiColor.yellow),
       AnsiStyle.background(AnsiColor.black),
     ]),
-    "E": ColorizeStyle([
+    'E': ColorizeStyle([
       AnsiStyle.bright(AnsiColor.white),
       AnsiStyle.background(AnsiColor.red),
     ]),
@@ -239,16 +239,16 @@ class DebugTree extends LogTree {
     Map<String, String?>? attributes,
   }) {
     final logTag = tag ?? LogTree.getTag();
-    final logLineBuilder = StringBuffer("$level\t$logTag:\t $message");
+    final logLineBuilder = StringBuffer('$level\t$logTag:\t $message');
 
     if (ex != null) {
-      logLineBuilder.write("\n$ex");
+      logLineBuilder.write('\n$ex');
     }
     if (stacktrace != null) {
       final tmpStacktrace = stacktrace.toString().split('\n');
       final stackTraceMessage =
-          tmpStacktrace.map((stackLine) => "\t$stackLine").join("\n");
-      logLineBuilder.write("\n$stackTraceMessage");
+          tmpStacktrace.map((stackLine) => '\t$stackLine').join('\n');
+      logLineBuilder.write('\n$stackTraceMessage');
     }
     printLog(logLineBuilder.toString(), level: level);
   }
@@ -259,10 +259,10 @@ class DebugTree extends LogTree {
     var printableLine = logLine;
     if (printTimeType == timeElapsedType) {
       final timeElapsed = _elapsedTimeStopwatch.elapsed.toString();
-      printableLine = "$timeElapsed\t$logLine";
+      printableLine = '$timeElapsed\t$logLine';
     } else {
       final date = DateTime.now().toIso8601String();
-      printableLine = "$date\t$logLine";
+      printableLine = '$date\t$logLine';
     }
     final colorizeTransform = (level != null) ? colorizeMap[level] : null;
     if (colorizeTransform != null) {
@@ -316,7 +316,7 @@ class LogLineInfo {
 
 /// Interface for LogTree
 abstract class LogTree {
-  static const String _defaultTag = "Flutter";
+  static const String _defaultTag = 'Flutter';
 
   /// Logs [message] with log [level]
   /// and optional [tag], [ex] (exception) [stacktrace]
@@ -332,7 +332,7 @@ abstract class LogTree {
   /// Gets levels of logging serviced by this [LogTree]
   List<String> getLevels();
   static final _logMatcher =
-      RegExp(r"([a-zA-Z\<\>\s\.]*)\s\(\w+:\/(.*\.dart):(\d*):(\d*)");
+      RegExp(r'([a-zA-Z\<\>\s\.]*)\s\(\w+:\/(.*\.dart):(\d*):(\d*)');
 
   /// Gets [LogLineInfo] with [stackIndex]
   /// which provides data for tag and line of code
@@ -353,7 +353,7 @@ abstract class LogTree {
           tag: match
                   .group(1)
                   ?.trim()
-                  .replaceAll("<anonymous closure>", "<ac>") ??
+                  .replaceAll('<anonymous closure>', '<ac>') ??
               _defaultTag,
           logFilePath: match.group(2),
           lineNumber: int.tryParse(match.group(3) ?? '-1') ?? -1,
@@ -373,12 +373,12 @@ abstract class LogTree {
     final stackTraceList = StackTrace.current.toString().split('\n');
     if (stackTraceList.length > stackIndex) {
       final lineChunks =
-          stackTraceList[stackIndex].replaceAll("<anonymous closure>", "<ac>");
+          stackTraceList[stackIndex].replaceAll('<anonymous closure>', '<ac>');
       if (lineChunks.length > 6) {
         final lineParts = lineChunks.split(' ');
         if (lineParts.length > 8 && lineParts[6] == 'new') {
           // constructor logging
-          return "${lineParts[6]} ${lineParts[7]}";
+          return '${lineParts[6]} ${lineParts[7]}';
         } else if (lineParts.length > 6) {
           return lineParts[6];
         } else {
@@ -417,7 +417,7 @@ class FimberLog {
     Map<String, String?>? attributes,
   }) {
     _log(
-      "V",
+      'V',
       tag,
       message,
       ex: ex,
@@ -435,7 +435,7 @@ class FimberLog {
     Map<String, String?>? attributes,
   }) {
     _log(
-      "D",
+      'D',
       tag,
       message,
       ex: ex,
@@ -453,7 +453,7 @@ class FimberLog {
     Map<String, String?>? attributes,
   }) {
     _log(
-      "I",
+      'I',
       tag,
       message,
       ex: ex,
@@ -471,7 +471,7 @@ class FimberLog {
     Map<String, String?>? attributes,
   }) {
     _log(
-      "W",
+      'W',
       tag,
       message,
       ex: ex,
@@ -489,7 +489,7 @@ class FimberLog {
     Map<String, String?>? attributes,
   }) {
     _log(
-      "E",
+      'E',
       tag,
       message,
       ex: ex,
@@ -524,44 +524,44 @@ class FimberLog {
 /// which will be replaced with a value for each log line.
 class CustomFormatTree extends LogTree {
   /// List of default levels for debug logging
-  static const List<String> defaultLevels = ["D", "I", "W", "E"];
+  static const List<String> defaultLevels = ['D', 'I', 'W', 'E'];
 
   /// Format token for time stamp
-  static const String timeStampToken = "{TIME_STAMP}";
+  static const String timeStampToken = '{TIME_STAMP}';
 
   /// Format token for time elapsed
-  static const String timeElapsedToken = "{TIME_ELAPSED}";
+  static const String timeElapsedToken = '{TIME_ELAPSED}';
 
   /// Format token for log level character
-  static const String levelToken = "{LEVEL}";
+  static const String levelToken = '{LEVEL}';
 
   /// Format token for log tag
-  static const String tagToken = "{TAG}";
+  static const String tagToken = '{TAG}';
 
   /// Format token for main log message
-  static const String messageToken = "{MESSAGE}";
+  static const String messageToken = '{MESSAGE}';
 
   /// Format token for exception message
-  static const String exceptionMsgToken = "{EX_MSG}";
+  static const String exceptionMsgToken = '{EX_MSG}';
 
   /// Format token for exception's stacktrace
-  static const String exceptionStackToken = "{EX_STACK}";
+  static const String exceptionStackToken = '{EX_STACK}';
 
   /// Format token for file path.
-  static const String filePathToken = "{FILE_PATH}";
+  static const String filePathToken = '{FILE_PATH}';
 
   /// Format token for file name.
-  static const String fileNameToken = "{FILE_NAME}";
+  static const String fileNameToken = '{FILE_NAME}';
 
   /// Format token for file's line number
-  static const String lineNumberToken = "{LINE_NUMBER}";
+  static const String lineNumberToken = '{LINE_NUMBER}';
 
   /// Format token for character index on the line
-  static const String charAtIndexToken = "{CHAR_INDEX}";
+  static const String charAtIndexToken = '{CHAR_INDEX}';
 
   /// Default format for timestamp based log message.
   static const String defaultFormat =
-      "$timeStampToken\t$levelToken $tagToken: $messageToken";
+      '$timeStampToken\t$levelToken $tagToken: $messageToken';
 
   /// Flag elapsed time in format
   static const int timeElapsedFlag = 1;
@@ -570,13 +570,13 @@ class CustomFormatTree extends LogTree {
   static const int timeClockFlag = 2;
 
   static final Map<String, ColorizeStyle> _defaultColorizeMap = {
-    "V": ColorizeStyle([AnsiStyle.foreground(AnsiColor.blue)]),
-    "D": ColorizeStyle([AnsiStyle.foreground(AnsiColor.green)]),
-    "W": ColorizeStyle([
+    'V': ColorizeStyle([AnsiStyle.foreground(AnsiColor.blue)]),
+    'D': ColorizeStyle([AnsiStyle.foreground(AnsiColor.green)]),
+    'W': ColorizeStyle([
       AnsiStyle.foreground(AnsiColor.yellow),
       AnsiStyle.background(AnsiColor.black),
     ]),
-    "E": ColorizeStyle([
+    'E': ColorizeStyle([
       AnsiStyle.bright(AnsiColor.white),
       AnsiStyle.background(AnsiColor.red),
     ]),
@@ -681,21 +681,21 @@ class CustomFormatTree extends LogTree {
       final tmpStacktrace =
           stacktrace?.toString().split('\n') ?? LogTree.getStacktrace();
       final stackTraceMessage =
-          tmpStacktrace.map((stackLine) => "\t$stackLine").join("\n");
+          tmpStacktrace.map((stackLine) => '\t$stackLine').join('\n');
       printLine(
         _formatLine(
           logFormat,
           level,
           msg,
           logLineInfo,
-          "\n$ex",
-          "\n$stackTraceMessage",
+          '\n$ex',
+          '\n$stackTraceMessage',
         ),
         level: level,
       );
     } else {
       printLine(
-        _formatLine(logFormat, level, msg, logLineInfo, "", ""),
+        _formatLine(logFormat, level, msg, logLineInfo, '', ''),
         level: level,
       );
     }
@@ -762,11 +762,11 @@ class CustomFormatTree extends LogTree {
   void printLog(String logLine, {String? level}) {
     if (_printTimeFlag & timeElapsedFlag > 0) {
       final timeElapsed =
-          _elapsedTimeStopwatch?.elapsed.toString() ?? "xx:xx:xxx";
-      printLine("$timeElapsed\t$logLine", level: level);
+          _elapsedTimeStopwatch?.elapsed.toString() ?? 'xx:xx:xxx';
+      printLine('$timeElapsed\t$logLine', level: level);
     } else {
       final date = DateTime.now().toIso8601String();
-      printLine("$date\t$logLine", level: level);
+      printLine('$date\t$logLine', level: level);
     }
   }
 

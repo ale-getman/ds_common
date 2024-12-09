@@ -66,24 +66,24 @@ class AnsiStyle {
   String _selectionCode() {
     switch (selection) {
       case AnsiSelection.background:
-        return "4";
+        return '4';
       case AnsiSelection.foreground:
-        return "3";
+        return '3';
       case AnsiSelection.reversed:
-        return "7";
+        return '7';
       case AnsiSelection.bright:
-        return "9";
+        return '9';
       case AnsiSelection.underline:
-        return "4";
+        return '4';
     }
   }
 
   /// returns color code for ANSI style entry.
   String _colorCode() {
     if (bit9Palette != null && color == AnsiColor.bits) {
-      return "8;5;$bit9Palette";
+      return '8;5;$bit9Palette';
     } else {
-      return color?.index.toString() ?? "";
+      return color?.index.toString() ?? '';
     }
   }
 
@@ -140,16 +140,16 @@ class ColorizeStyle {
 
 /// Colorize class that wraps text with defined values.
 class Colorize {
-  static const _cmdCode = "\x1b[";
+  static const _cmdCode = '\x1b[';
 
-  static const _resetCode = "\x1b[0m";
+  static const _resetCode = '\x1b[0m';
 
-  static const _underlineType = "4";
-  static const _reverseType = "7";
-  static const _brightType = "9";
-  static const _blinkType = "5";
-  static const _foregroundType = "3";
-  static const _backgroundType = "4";
+  static const _underlineType = '4';
+  static const _reverseType = '7';
+  static const _brightType = '9';
+  static const _blinkType = '5';
+  static const _foregroundType = '3';
+  static const _backgroundType = '4';
 
   /// Colorize will apply foreground color of style if provided
   AnsiColor? foreground;
@@ -280,6 +280,6 @@ class Colorize {
   }
 
   static String _wrapAnsi(String text, String ansiCode) {
-    return "$_cmdCode${ansiCode}m$text$_resetCode";
+    return '$_cmdCode${ansiCode}m$text$_resetCode';
   }
 }
