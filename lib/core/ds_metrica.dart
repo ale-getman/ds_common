@@ -11,7 +11,7 @@ import 'package:ds_common/core/fimber/ds_fimber_base.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:userx_flutter/userx_flutter.dart';
+import 'package:flutter_uxcam/flutter_uxcam.dart';
 
 import 'ds_adjust.dart';
 import 'ds_constants.dart';
@@ -42,10 +42,12 @@ abstract class DSMetrica {
   static const _firstEventParam = 'ds_metrica_first_session_event';
 
   static var _eventId = 0;
-  static var _userXKey = '';
+  //static var _userXKey = '';
+  static var _uxCamKey = '';
   static var _yandexId = '';
   static late final bool _debugModeSend;
-  static var _userXRunning = false;
+  static var _uxCamInitializing = false;
+  static var _uxCamRunning = false;
   static var _previousScreenName = '';
 
   static final _persistentAttrs = <String, Object>{};
@@ -65,13 +67,13 @@ abstract class DSMetrica {
 
   /// Initialize DSMetrica. Must call before the first use
   /// [yandexKey] - API key of Yandex App Metrica
-  /// [userXKey] - API key of UserX
   /// [sentryKey] - API key of Sentry (NOT USED)
+  /// [uxCamKey] - API key of UXCam
   /// [forceSend] - send events in debug mode too
   static Future<void> init({
     required String yandexKey,
-    required String userXKey,
     String sentryKey = '',
+    required String uxCamKey,
     DSMetricaUserIdType userIdType = DSMetricaUserIdType.none,
     bool debugModeSend = false,
   }) async {
@@ -80,7 +82,7 @@ abstract class DSMetrica {
       return;
     }
 
-    _userXKey = userXKey;
+    _uxCamKey = uxCamKey;
     _debugModeSend = debugModeSend;
     _userIdType = userIdType;
 
@@ -111,7 +113,7 @@ abstract class DSMetrica {
       }
     } else {
       assert(yandexKey == '', 'yandexKey supports mobile platform only. Remove yandexKey id');
-      assert(userXKey == '', 'userXKey supports mobile platform only. Remove userXKey id');
+      assert(uxCamKey == '', 'uxCamKey supports mobile platform only. Remove uxCamKey id');
     }
 
     await Future.wait(waits);
@@ -234,7 +236,7 @@ abstract class DSMetrica {
     if (_previousScreenName == screenName) return;
     _previousScreenName = screenName;
     reportEvent('$screenName, screen opened', attributes: attributes);
-    UserX.addScreenName(screenName);
+    unawaited(FlutterUxcam.tagScreenName(screenName));
   }
 
   /// Call this method on app start and [AppLifecycleState.resumed]
@@ -244,10 +246,10 @@ abstract class DSMetrica {
       DSPrefs.I.setAppLastUsed(DateTime.now());
       final newSession = DSPrefs.I.getSessionId() + 1;
       DSPrefs.I.setSessionId(newSession);
-      if (_userXRunning) {
+      if (_uxCamRunning) {
         final sessions = DSRemoteConfig.I.getUserXSessions();
         if (sessions != 0 && sessions < newSession) {
-          stopUserX();
+          stopUXCam();
         }
       }
     }
@@ -328,7 +330,7 @@ abstract class DSMetrica {
         }
       }
 
-      UserX.addEvent(eventName, attrs.map<String, String>((key, value) => MapEntry(key, '$value')));
+      unawaited(FlutterUxcam.logEventWithProperties(eventName, attrs));
 
       logDebug('$eventName $attrs', stackSkip: stackSkip, stackDeep: 5);
 
@@ -386,17 +388,22 @@ abstract class DSMetrica {
     await m.AppMetrica.reportError(message: message, errorDescription: errorDescription);
   }
 
-  /// Initialize UserX if it is allowed by RemoteConfig
-  static Future<void> tryStartUserX() async {
+  /// Initialize UXCam if it is allowed by RemoteConfig
+  static Future<void> tryStartUXCam() async {
+    if (_uxCamRunning || _uxCamInitializing) return;
+
     assert(DSConstants.isInitialized);
-    assert(DSRemoteConfig.I.isInitialized);
 
     if (kDebugMode && !_debugModeSend) return;
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
 
     if (DSConstants.I.isInternalVersion) {
-      await startUserX();
+      await startUXCam();
       return;
+    }
+
+    if (!DSRemoteConfig.I.isInitialized) {
+      await DSRemoteConfig.I.waitForInit();
     }
 
     var val = DSRemoteConfig.I.getUserXPercent();
@@ -413,12 +420,12 @@ abstract class DSMetrica {
     // if yandexId is empty (or non-valid) use simple random
     final yid = int.tryParse(yandexId.let((s) => s.length >= 2 ? s.substring(s.length - 2) : s)) ?? Random().nextInt(100);
     if ((yid % 100).toInt() < val) {
-      await DSMetrica.startUserX();
+      await DSMetrica.startUXCam();
     }
   }
 
-  /// Initialize UserX
-  static Future<void> startUserX() async {
+  /// Initialize UXCam
+  static Future<void> startUXCam() async {
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
 
     final sessions = DSRemoteConfig.I.getUserXSessions();
@@ -426,17 +433,29 @@ abstract class DSMetrica {
       return;
     }
 
-    reportEvent('userx starting');
-    UserX.start(_userXKey);
-    UserX.setUserId(yandexId);
-    _userXRunning = true;
+    if (_uxCamInitializing) return;
+    _uxCamInitializing = true;
+    try {
+      reportEvent('uxcam starting');
+      await FlutterUxcam.optIntoSchematicRecordings(); // Confirm that you have user permission for screen recording
+      final config = FlutterUxConfig(
+        userAppKey: _uxCamKey,
+        enableAutomaticScreenNameTagging: false,
+      );
+      await FlutterUxcam.startWithConfiguration(config);
+      reportEvent('uxcam started');
+      unawaited(FlutterUxcam.setUserIdentity(yandexId));
+      _uxCamRunning = true;
+    } finally {
+      _uxCamInitializing = false;
+    }
   }
 
-  /// Stop UserX
-  static Future<void> stopUserX() async {
+  /// Stop UXCam
+  static Future<void> stopUXCam() async {
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
-    await UserX.stopScreenRecording();
-    _userXRunning = false;
+    await FlutterUxcam.stopSessionAndUploadData();
+    _uxCamRunning = false;
   }
 
   /// Save attributes to send it in every [reportEvent]
