@@ -67,8 +67,5 @@ class DSConstants {
   /// is app build production (2-number builds are production - 1.0, 3.1, etc)
   bool get isProductionVersion => !isInternalVersion;
 
-  @Deprecated('Use isProductionVersion instead')
-  bool get isProductionAds => isProductionVersion;
-
   late final PackageInfo packageInfo;
 }

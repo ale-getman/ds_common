@@ -1,11 +1,6 @@
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
 import 'package:decimal/decimal.dart' as d;
 
-@Deprecated('Use AppMetricaAdType instead')
-typedef AdType = m.AppMetricaAdType;
-@Deprecated('Use AppMetricaAdRevenue instead')
-typedef AdRevenue = m.AppMetricaAdRevenue;
-
 typedef AppMetricaAdType = m.AppMetricaAdType;
 typedef Decimal = d.Decimal;
 typedef UserProfile = m.AppMetricaUserProfile;

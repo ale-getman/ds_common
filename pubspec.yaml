@@ -19,7 +19,6 @@ dependencies:
   shared_preferences: ^2.0.17
   flutter_uxcam: ^2.5.4
   appmetrica_plugin: ^3.1.0
-#  sentry_flutter: ^8.4.0
   decimal: ^3.0.2
   package_info_plus: ^8.0.0
   firebase_remote_config: ">=4.0.0 <7.0.0"

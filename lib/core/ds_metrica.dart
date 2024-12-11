@@ -67,12 +67,10 @@ abstract class DSMetrica {
 
   /// Initialize DSMetrica. Must call before the first use
   /// [yandexKey] - API key of Yandex App Metrica
-  /// [sentryKey] - API key of Sentry (NOT USED)
   /// [uxCamKey] - API key of UXCam
   /// [forceSend] - send events in debug mode too
   static Future<void> init({
     required String yandexKey,
-    String sentryKey = '',
     required String uxCamKey,
     DSMetricaUserIdType userIdType = DSMetricaUserIdType.none,
     bool debugModeSend = false,
@@ -89,19 +87,6 @@ abstract class DSMetrica {
     final waits = <Future>[];
 
     WidgetsFlutterBinding.ensureInitialized();
-
-    // if (sentryKey.isNotEmpty && (!kDebugMode || _debugModeSend)) {
-    //   waits.add(() async {
-    //     await SentryFlutter.init(
-    //           (options) {
-    //         options.dsn = sentryKey;
-    //         options.diagnosticLevel = kDebugMode ? SentryLevel.debug : SentryLevel.warning;
-    //         options.tracesSampleRate = 1.0;
-    //         options.profilesSampleRate = 1.0;
-    //       },
-    //     );
-    //   } ());
-    // }
 
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
@@ -189,28 +174,12 @@ abstract class DSMetrica {
     await m.AppMetrica.setUserProfileID(userProfileID);
   }
 
-  /// Send only one event per app lifetime
-  @Deprecated('Use event sending with type [EventSendingType.oncePerApplifetime] in the [DSMetrica.reportEvent] method')
-  static void reportFirstEvent(String eventName, {Map<String, Object>? attributes, int stackSkip = 1}) {
-    final firstEvent = DSPrefs.I.internal.getString(_firstEventParam);
-    if (firstEvent != null) return;
-    DSPrefs.I.internal.setString(_firstEventParam, eventName);
-    reportEventWithMap(
-      '$eventName (first event)',
-      attributes,
-      stackSkip: stackSkip + 1,
-      eventSendingType: EventSendingType.oncePerAppLifetime,
-    );
-  }
-
   /// Get legacy device id. Recommended to use other ID instead
   static Future<String> getDeviceId() async {
     if (kIsWeb) {
       throw Exception('Unsupported platform');
     }
     return await DSInternal.platform.invokeMethod('getDeviceId');
-    // final info = await DeviceInfoPlugin().androidInfo;
-    // id = info.androidId; //UUID for Android
   }
 
   /// Report event to AppMetrica and UserX (disabled in debug mode)
