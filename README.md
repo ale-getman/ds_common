@@ -2,9 +2,10 @@
 
 Common library for Flutter projects. 
 Integrates: 
-- UserX 
+- UXCam 
 - AppMetrica
 - Adjust
+- Fimber
 - Firebase Crashlytics
 - Shared Preferences
 - Firebase Remote Config

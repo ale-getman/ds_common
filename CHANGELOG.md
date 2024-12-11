@@ -1,3 +1,12 @@
+## 2.0.0
+BREAKING CHANGES:
+- replace UserX to UXCam sessions recording library
+- remove deprecated and unused code
+
+OTHER CHANGES:
+- update shared_preferences library https://github.com/advisories/GHSA-3hpf-ff72-j67p
+- fix double quotes hints
+
 ## 1.1.0
 - integrate Fimber with attributes extensions into ds_common library #4 https://app.asana.com/0/1208203354836323/1208312050177353/f
 
