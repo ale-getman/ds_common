@@ -1,3 +1,6 @@
+## 2.0.1
+- add limited experimental support to trace screens by [DSNavigatorObserver]
+
 ## 2.0.0
 BREAKING CHANGES:
 - replace UserX to UXCam sessions recording library
