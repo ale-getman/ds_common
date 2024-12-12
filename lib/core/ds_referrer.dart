@@ -121,7 +121,7 @@ class DSReferrer {
             'ad_imp': data['adimp'] ?? '',
             'utm_source': utmSource,
             'utm_content': data['utm_content'] ?? '',
-            'is_valid_fb_flow': isValidFb,
+            'is_valid_fb_flow': isValidFb.toString(),
             'campaign': data['utm_campaign'] ?? 'unknown',
             'adjust_external_click_id': adjustExternalClickId,
             if (installParamsExtra != null)
