@@ -30,6 +30,8 @@ abstract class DSAdjust {
   static Future<void> init({
     required String adjustKey,
     bool? launchDeferredDeeplink,
+    bool? launchLinkMeEnabled,
+    DeferredDeeplinkCallback? deferredDeeplinkCallback,
   }) async {
     if (_isInitialized) {
       Fimber.e('DSAdjust is already initialised', stacktrace: StackTrace.current);
@@ -42,6 +44,8 @@ abstract class DSAdjust {
     config.logLevel = AdjustLogLevel.verbose;
     config.attributionCallback = _setAdjustAttribution;
     config.isDeferredDeeplinkOpeningEnabled = launchDeferredDeeplink;
+    config.deferredDeeplinkCallback = deferredDeeplinkCallback;
+    config.isLinkMeEnabled = launchLinkMeEnabled;
     Adjust.initSdk(config);
 
     _isInitialized = true;
@@ -53,6 +57,8 @@ abstract class DSAdjust {
       callback();
     }
   }
+
+  static Future<String?> getLastDeeplink() async => await Adjust.getLastDeeplink();
 
   /// Add callback to be called after initialization
   static addAfterInitCallback(void Function() callback) {
