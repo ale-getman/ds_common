@@ -205,13 +205,28 @@ abstract class DSMetrica {
         eventSendingType: eventSendingType,
       );
 
-  /// Report sceen change to implement Heatmaps functionality in UserX
-  static Future<void> reportScreenOpened(String screenName, {Map<String, Object>? attributes}) async {
-    if (_previousScreenName == screenName) return;
-    _previousScreenName = screenName;
-    _screenNames.add(screenName);
-    reportEvent('$screenName, screen opened', attributes: attributes);
-    unawaited(FlutterUxcam.tagScreenName(screenName));
+  static String _normalizeScreenName(String? name) {
+    var res = name ?? 'none';
+    final p1 = res.indexOf('?');
+    if (p1 >= 0) {
+      res = res.substring(0, p1);
+    }
+    final p2 = res.indexOf('#');
+    if (p2 >= 0) {
+      res = res.substring(0, p2);
+    }
+    return res;
+  }
+  
+  /// Report screen change to implement Heatmaps functionality in UserX
+  /// It removes all chars since ? and # (keep just path without queue and anchor)
+  static Future<void> reportScreenOpened(String? screenName, {Map<String, Object>? attributes}) async {
+    final sn = _normalizeScreenName(screenName);
+    if (_previousScreenName == sn) return;
+    _previousScreenName = sn;
+    _screenNames.add(sn);
+    reportEvent('$sn, screen opened', attributes: attributes);
+    unawaited(FlutterUxcam.tagScreenName(sn));
   }
 
   /// Call this method on app start and [AppLifecycleState.resumed]
@@ -516,13 +531,13 @@ class DSNavigatorObserver extends NavigatorObserver {
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
     DSMetrica._screenNames.remove(oldRoute?.settings.name);
-    DSMetrica.reportScreenOpened(newRoute?.settings.name ?? 'none');
+    DSMetrica.reportScreenOpened(newRoute?.settings.name);
     super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
   }
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    DSMetrica._screenNames.remove(route.settings.name);
+    DSMetrica._screenNames.remove(DSMetrica._normalizeScreenName(route.settings.name));
     final name = DSMetrica._screenNames.isNotEmpty
         ? DSMetrica._screenNames.last
         : '/';
