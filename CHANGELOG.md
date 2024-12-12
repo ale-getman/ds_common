@@ -1,3 +1,6 @@
+## 2.0.2
+- remove all chars since ? and # (path and anchor parts) from screen names
+
 ## 2.0.1
 - add limited experimental support to trace screens by [DSNavigatorObserver]
 
