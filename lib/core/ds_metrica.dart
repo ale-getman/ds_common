@@ -49,6 +49,11 @@ abstract class DSMetrica {
   static var _uxCamInitializing = false;
   static var _uxCamRunning = false;
   static var _previousScreenName = '';
+  /// Using this approach as we need to keep track of screens
+  /// before this one and keep track of screens previous to the
+  /// current one.
+  static final _screenNames = <String>[];
+
 
   static final _persistentAttrs = <String, Object>{};
   static DSMetricaAttrsCallback? _attrsHandlerOld;
@@ -204,6 +209,7 @@ abstract class DSMetrica {
   static Future<void> reportScreenOpened(String screenName, {Map<String, Object>? attributes}) async {
     if (_previousScreenName == screenName) return;
     _previousScreenName = screenName;
+    _screenNames.add(screenName);
     reportEvent('$screenName, screen opened', attributes: attributes);
     unawaited(FlutterUxcam.tagScreenName(screenName));
   }
@@ -488,5 +494,49 @@ abstract class DSMetrica {
     final key = _oncePerApplifetimeEventKey(eventName);
 
     DSPrefs.I.internal.setBool(key, true);
+  }
+}
+
+/// Trace navigation in app
+/// Based on [FlutterUxcamNavigatorObserver] of [flutter_uxcam]
+class DSNavigatorObserver extends NavigatorObserver {
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    super.didPush(route, previousRoute);
+
+    /// This line of code is required as there are scenarios where we have
+    /// routing like in popup menu but it is not handled by routing in
+    /// [onGenerateRoute].
+    if (route.settings.name != null) {
+      DSMetrica.reportScreenOpened(route.settings.name!);
+    }
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    DSMetrica._screenNames.remove(oldRoute?.settings.name);
+    DSMetrica.reportScreenOpened(newRoute?.settings.name ?? 'none');
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    DSMetrica._screenNames.remove(route.settings.name);
+    final name = DSMetrica._screenNames.isNotEmpty
+        ? DSMetrica._screenNames.last
+        : '/';
+    DSMetrica.reportScreenOpened(name);
+    super.didPop(route, previousRoute);
+  }
+
+  @override
+  void didRemove(Route route, Route? previousRoute) {
+    DSMetrica._screenNames.remove(route.settings.name);
+    final name = DSMetrica._screenNames.isNotEmpty
+        ? DSMetrica._screenNames.last
+        : '/';
+    DSMetrica.reportScreenOpened(name);
+    super.didRemove(route, previousRoute);
   }
 }
