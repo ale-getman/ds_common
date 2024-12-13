@@ -1,3 +1,6 @@
+## 2.0.3
+- add deferredDeeplinkCallback and launchLinkMeEnabled Adjust parameters (#5)
+
 ## 2.0.2
 - remove all chars since ? and # (path and anchor parts) from screen names
 
