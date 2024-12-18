@@ -1,3 +1,7 @@
+## 2.0.4
+- change AppMetrica dispatchPeriodSeconds from 90 (default) seconds to 5
+- maybe fix: do not send sessions if kDebugMode is true
+
 ## 2.0.3
 - add deferredDeeplinkCallback and launchLinkMeEnabled Adjust parameters (#5)
 
