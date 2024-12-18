@@ -96,6 +96,7 @@ abstract class DSMetrica {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
         sessionsAutoTrackingEnabled: !kDebugMode || _debugModeSend,
+        dataSendingEnabled: !kDebugMode || _debugModeSend ? null : false,
       ));
 
       if (kDebugMode && !_debugModeSend) {

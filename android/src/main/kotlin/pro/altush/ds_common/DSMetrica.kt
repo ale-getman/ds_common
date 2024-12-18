@@ -23,6 +23,7 @@ class DSMetrica {
             val config = AppMetricaConfig.newConfigBuilder(metricaKey)
             if (BuildConfig.DEBUG) {
                 config.withSessionsAutoTrackingEnabled(false)
+                config.withDataSendingEnabled(false)
             }
             AppMetrica.activate(app.applicationContext, config.build())
             AppMetrica.enableActivityAutoTracking(app)
