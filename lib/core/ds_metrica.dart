@@ -97,6 +97,7 @@ abstract class DSMetrica {
       await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
         sessionsAutoTrackingEnabled: !kDebugMode || _debugModeSend,
         dataSendingEnabled: !kDebugMode || _debugModeSend ? null : false,
+        dispatchPeriodSeconds: 5,
       ));
 
       if (kDebugMode && !_debugModeSend) {
