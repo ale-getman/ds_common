@@ -1,3 +1,7 @@
+## 2.0.5
+- add uxcam_percent and uxcam_sessions RemoteConfig params. Old values (userx_percent and userx_sessions) ​​are used only if uxcam_percent and uxcam_sessions are not specified
+- synchronize AppMetrica user profile in Android native part
+
 ## 2.0.4
 - change AppMetrica dispatchPeriodSeconds from 90 (default) seconds to 5
 - maybe fix: do not send sessions if kDebugMode is true
