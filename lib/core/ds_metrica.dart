@@ -178,7 +178,10 @@ abstract class DSMetrica {
   /// Set user profile ID
   static Future<void> setUserProfileID(String userProfileID) async {
     _userProfileID = userProfileID;
-    await m.AppMetrica.setUserProfileID(userProfileID);
+    await Future.wait([
+      m.AppMetrica.setUserProfileID(userProfileID),
+      DSInternal.platform.invokeMethod('setUserProfile', userProfileID),
+    ]);
   }
 
   /// Get legacy device id. Recommended to use other ID instead

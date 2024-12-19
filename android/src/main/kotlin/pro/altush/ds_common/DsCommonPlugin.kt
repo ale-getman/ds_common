@@ -5,6 +5,7 @@ import android.content.Context
 import android.provider.Settings
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
+import io.appmetrica.analytics.AppMetrica
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -31,6 +32,7 @@ class DsCommonPlugin: FlutterPlugin, MethodCallHandler {
             } catch (e: Throwable) {
                 result.error("getDeviceId native error: ${e.message}", null, null)
             }
+            "setUserProfile" -> AppMetrica.setUserProfileID(call.arguments<String?>())
             else -> result.notImplemented()
         }
     }
