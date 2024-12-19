@@ -148,6 +148,10 @@ class DSRemoteConfig {
     return Duration(seconds: res);
   }
 
+  int getUXCamPercent() => getInt('uxcam_percent', defVal: getUserXPercent());
+  int getUXCamSessions() => getInt('uxcam_sessions', defVal: getUserXSessions());
+
+  /// Will be removed in future versions. Use uxcam_percent
   int getUserXPercent() => getInt('userx_percent');
   int getUserXSessions() => getInt('userx_sessions');
 

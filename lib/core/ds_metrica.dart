@@ -239,7 +239,7 @@ abstract class DSMetrica {
       final newSession = DSPrefs.I.getSessionId() + 1;
       DSPrefs.I.setSessionId(newSession);
       if (_uxCamRunning) {
-        final sessions = DSRemoteConfig.I.getUserXSessions();
+        final sessions = DSRemoteConfig.I.getUXCamSessions();
         if (sessions != 0 && sessions < newSession) {
           stopUXCam();
         }
@@ -398,13 +398,13 @@ abstract class DSMetrica {
       await DSRemoteConfig.I.waitForInit();
     }
 
-    var val = DSRemoteConfig.I.getUserXPercent();
+    var val = DSRemoteConfig.I.getUXCamPercent();
     if (val == 0) {
       await DSRemoteConfig.I.waitForFullInit(maxWait: const Duration(seconds: 20));
-      val = DSRemoteConfig.I.getUserXPercent();
+      val = DSRemoteConfig.I.getUXCamPercent();
       if (val == 0) return;
     }
-    final sessions = DSRemoteConfig.I.getUserXSessions();
+    final sessions = DSRemoteConfig.I.getUXCamSessions();
     if (sessions != 0 && sessions < DSPrefs.I.getSessionId()) {
       return;
     }
@@ -420,7 +420,7 @@ abstract class DSMetrica {
   static Future<void> startUXCam() async {
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
 
-    final sessions = DSRemoteConfig.I.getUserXSessions();
+    final sessions = DSRemoteConfig.I.getUXCamSessions();
     if (sessions != 0 && sessions < DSPrefs.I.getSessionId()) {
       return;
     }
