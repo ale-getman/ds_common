@@ -179,7 +179,8 @@ abstract class DSMetrica {
     _userProfileID = userProfileID;
     await Future.wait([
       m.AppMetrica.setUserProfileID(userProfileID),
-      DSInternal.platform.invokeMethod('setUserProfile', userProfileID),
+      if (Platform.isAndroid)
+        DSInternal.platform.invokeMethod('setUserProfile', userProfileID),
     ]);
   }
 
