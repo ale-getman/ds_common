@@ -1,3 +1,7 @@
+## 2.0.6
+- fix iOS exception on setUserProfile call
+- change AppMetrica dispatchPeriodSeconds to default period
+
 ## 2.0.5
 - add uxcam_percent and uxcam_sessions RemoteConfig params. Old values (userx_percent and userx_sessions) ​​are used only if uxcam_percent and uxcam_sessions are not specified
 - synchronize AppMetrica user profile in Android native part
