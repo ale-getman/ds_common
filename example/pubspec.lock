@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.2"
+  amplitude_flutter:
+    dependency: transitive
+    description:
+      name: amplitude_flutter
+      sha256: "96570bb256fd17185b705230bcc1507690ad9d36ca348abe4bf28541315fb067"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.16.6"
   appmetrica_plugin:
     dependency: transitive
     description:
@@ -135,7 +143,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.0.3"
+    version: "2.0.7"
   fake_async:
     dependency: transitive
     description:
@@ -327,6 +335,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.19.0"
+  js:
+    dependency: transitive
+    description:
+      name: js
+      sha256: c1b2e9b5ea78c45e1a0788d29606ba27dc5f71f019f32ca5140f61ef071838cf
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.1"
   leak_tracker:
     dependency: transitive
     description:

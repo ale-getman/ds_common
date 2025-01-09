@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:amplitude_flutter/amplitude.dart';
 import 'package:appmetrica_plugin/appmetrica_plugin.dart' as m;
 import 'package:ds_common/core/ds_primitives.dart';
 import 'package:ds_common/core/ds_referrer.dart';
@@ -44,6 +45,8 @@ abstract class DSMetrica {
   static var _eventId = 0;
   //static var _userXKey = '';
   static var _uxCamKey = '';
+  static var _amplitudeKey = '';
+  static final _amplitude = Amplitude.getInstance();
   static var _yandexId = '';
   static late final bool _debugModeSend;
   static var _uxCamInitializing = false;
@@ -77,6 +80,7 @@ abstract class DSMetrica {
   static Future<void> init({
     required String yandexKey,
     required String uxCamKey,
+    String amplitudeKey = '',
     DSMetricaUserIdType userIdType = DSMetricaUserIdType.none,
     bool debugModeSend = false,
   }) async {
@@ -86,6 +90,7 @@ abstract class DSMetrica {
     }
 
     _uxCamKey = uxCamKey;
+    _amplitudeKey = amplitudeKey;
     _debugModeSend = debugModeSend;
     _userIdType = userIdType;
 
@@ -93,18 +98,25 @@ abstract class DSMetrica {
 
     WidgetsFlutterBinding.ensureInitialized();
 
-    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-      await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
-        sessionsAutoTrackingEnabled: !kDebugMode || _debugModeSend,
-        dataSendingEnabled: !kDebugMode || _debugModeSend ? null : false,
-      ));
+    waits.add(() async {
+      if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+        await m.AppMetrica.activate(m.AppMetricaConfig(yandexKey,
+          sessionsAutoTrackingEnabled: !kDebugMode || _debugModeSend,
+          dataSendingEnabled: !kDebugMode || _debugModeSend ? null : false,
+        ));
 
-      if (kDebugMode && !_debugModeSend) {
-        await m.AppMetrica.pauseSession();
+        if (kDebugMode && !_debugModeSend) {
+          await m.AppMetrica.pauseSession();
+        }
+      } else {
+        assert(yandexKey == '', 'yandexKey supports mobile platform only. Remove yandexKey id');
+        assert(uxCamKey == '', 'uxCamKey supports mobile platform only. Remove uxCamKey id');
       }
-    } else {
-      assert(yandexKey == '', 'yandexKey supports mobile platform only. Remove yandexKey id');
-      assert(uxCamKey == '', 'uxCamKey supports mobile platform only. Remove uxCamKey id');
+    } ());
+    if (_amplitudeKey.isNotEmpty) {
+      waits.add(() async {
+        await _amplitude.init(_amplitudeKey);
+      }());
     }
 
     await Future.wait(waits);
@@ -196,6 +208,7 @@ abstract class DSMetrica {
   static void reportEvent(
       String eventName, {
         bool fbSend = false,
+        bool amplitudeSend = true,
         Map<String, Object>? attributes,
         Map<String, Object>? fbAttributes,
         int stackSkip = 1,
@@ -205,6 +218,7 @@ abstract class DSMetrica {
         eventName,
         attributes,
         fbSend: fbSend,
+        amplitudeSend: amplitudeSend,
         fbAttributes: fbAttributes,
         stackSkip: stackSkip + 1,
         eventSendingType: eventSendingType,
@@ -258,6 +272,7 @@ abstract class DSMetrica {
       String eventName,
       Map<String, Object>? attributes, {
         bool fbSend = false,
+        bool amplitudeSend = true,
         Map<String, Object>? fbAttributes,
         int stackSkip = 1,
         EventSendingType eventSendingType = EventSendingType.everyTime,
@@ -330,7 +345,9 @@ abstract class DSMetrica {
       logDebug('$eventName $attrs', stackSkip: stackSkip, stackDeep: 5);
 
       if (kDebugMode && !_debugModeSend) {
-        if (eventSendingType == EventSendingType.oncePerAppLifetime) _setEventSendPerLifetime(eventName);
+        if (eventSendingType == EventSendingType.oncePerAppLifetime) {
+          _setEventSendPerLifetime(eventName);
+        }
         return;
       }
 
@@ -354,9 +371,14 @@ abstract class DSMetrica {
           }
         }());
       }
+      if (amplitudeSend && _amplitudeKey.isNotEmpty) {
+        unawaited(_amplitude.logEvent(eventName, eventProperties: attrs));
+      }
       await m.AppMetrica.reportEventWithMap(eventName, attrs);
 
-      if (eventSendingType == EventSendingType.oncePerAppLifetime) _setEventSendPerLifetime(eventName);
+      if (eventSendingType == EventSendingType.oncePerAppLifetime) {
+        _setEventSendPerLifetime(eventName);
+      }
     } catch (e, stack) {
       if (!_reportEventError) {
         _reportEventError = true;

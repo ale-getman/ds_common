@@ -27,6 +27,7 @@ dependencies:
   cloud_functions: ">=4.0.0 <6.0.0"
   cloud_firestore: ">=4.0.0 <6.0.0"
   adjust_sdk: ^5.0.1
+  amplitude_flutter: ^3.13.0
 
 dev_dependencies:
   flutter_test:
