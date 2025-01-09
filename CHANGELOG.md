@@ -1,3 +1,6 @@
+## 2.1.0
+- add Amplitude logging
+
 ## 2.0.7
 - add AppOpen ad data exchange support between ds_ads and ds_purchase
 

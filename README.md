@@ -4,6 +4,7 @@ Common library for Flutter projects.
 Integrates: 
 - UXCam 
 - AppMetrica
+- Amplitude
 - Adjust
 - Fimber
 - Firebase Crashlytics
