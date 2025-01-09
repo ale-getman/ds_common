@@ -1,3 +1,6 @@
+## 2.0.7
+- add AppOpen ad data exchange support between ds_ads and ds_purchase
+
 ## 2.0.6
 - fix iOS exception on setUserProfile call
 - change AppMetrica dispatchPeriodSeconds to default period
