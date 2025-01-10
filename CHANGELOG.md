@@ -1,3 +1,6 @@
+## 2.1.1
+- add methods DSMetrica.getAmplitudeDeviceId() and DSMetrica.getAmplitudeUserId()
+
 ## 2.1.0
 - add Amplitude logging
 
