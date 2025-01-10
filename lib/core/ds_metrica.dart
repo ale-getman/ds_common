@@ -78,6 +78,11 @@ abstract class DSMetrica {
     return await _amplitude.getDeviceId();
   }
 
+  static Future<String?> getAmplitudeUserId() async {
+    if (_amplitudeKey.isEmpty) return null;
+    return await _amplitude.getUserId();
+  }
+
   /// Initialize DSMetrica. Must call before the first use
   /// [yandexKey] - API key of Yandex App Metrica
   /// [uxCamKey] - API key of UXCam
