@@ -12,7 +12,7 @@ import 'package:ds_common/core/fimber/ds_fimber_base.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_uxcam/flutter_uxcam.dart';
+import 'package:userx_flutter/userx_flutter.dart';
 
 import 'ds_adjust.dart';
 import 'ds_constants.dart';
@@ -43,20 +43,13 @@ abstract class DSMetrica {
   static const _firstEventParam = 'ds_metrica_first_session_event';
 
   static var _eventId = 0;
-  //static var _userXKey = '';
-  static var _uxCamKey = '';
+  static var _userXKey = '';
   static var _amplitudeKey = '';
   static final _amplitude = Amplitude.getInstance();
   static var _yandexId = '';
   static late final bool _debugModeSend;
-  static var _uxCamInitializing = false;
-  static var _uxCamRunning = false;
+  static var _userXRunning = false;
   static var _previousScreenName = '';
-  /// Using this approach as we need to keep track of screens
-  /// before this one and keep track of screens previous to the
-  /// current one.
-  static final _screenNames = <String>[];
-
 
   static final _persistentAttrs = <String, Object>{};
   static DSMetricaAttrsCallback? _attrsHandlerOld;
@@ -85,11 +78,11 @@ abstract class DSMetrica {
 
   /// Initialize DSMetrica. Must call before the first use
   /// [yandexKey] - API key of Yandex App Metrica
-  /// [uxCamKey] - API key of UXCam
+  /// [userXKey] - API key of UserX
   /// [forceSend] - send events in debug mode too
   static Future<void> init({
     required String yandexKey,
-    required String uxCamKey,
+    required String userXKey,
     String amplitudeKey = '',
     DSMetricaUserIdType userIdType = DSMetricaUserIdType.none,
     bool debugModeSend = false,
@@ -99,7 +92,7 @@ abstract class DSMetrica {
       return;
     }
 
-    _uxCamKey = uxCamKey;
+    _userXKey = userXKey;
     _amplitudeKey = amplitudeKey;
     _debugModeSend = debugModeSend;
     _userIdType = userIdType;
@@ -120,7 +113,7 @@ abstract class DSMetrica {
         }
       } else {
         assert(yandexKey == '', 'yandexKey supports mobile platform only. Remove yandexKey id');
-        assert(uxCamKey == '', 'uxCamKey supports mobile platform only. Remove uxCamKey id');
+        assert(userXKey == '', 'userXKey supports mobile platform only. Remove userXKey id');
       }
     } ());
     if (_amplitudeKey.isNotEmpty) {
@@ -253,9 +246,8 @@ abstract class DSMetrica {
     final sn = _normalizeScreenName(screenName);
     if (_previousScreenName == sn) return;
     _previousScreenName = sn;
-    _screenNames.add(sn);
     reportEvent('$sn, screen opened', attributes: attributes);
-    unawaited(FlutterUxcam.tagScreenName(sn));
+    UserX.addScreenName(sn);
   }
 
   /// Call this method on app start and [AppLifecycleState.resumed]
@@ -265,10 +257,10 @@ abstract class DSMetrica {
       DSPrefs.I.setAppLastUsed(DateTime.now());
       final newSession = DSPrefs.I.getSessionId() + 1;
       DSPrefs.I.setSessionId(newSession);
-      if (_uxCamRunning) {
-        final sessions = DSRemoteConfig.I.getUXCamSessions();
+      if (_userXRunning) {
+        final sessions = DSRemoteConfig.I.getUserXSessions();
         if (sessions != 0 && sessions < newSession) {
-          stopUXCam();
+          stopUserX();
         }
       }
     }
@@ -350,7 +342,7 @@ abstract class DSMetrica {
         }
       }
 
-      unawaited(FlutterUxcam.logEventWithProperties(eventName, attrs));
+      UserX.addEvent(eventName, attrs.map<String, String>((key, value) => MapEntry(key, '$value')));
 
       logDebug('$eventName $attrs', stackSkip: stackSkip, stackDeep: 5);
 
@@ -415,31 +407,27 @@ abstract class DSMetrica {
     await m.AppMetrica.reportError(message: message, errorDescription: errorDescription);
   }
 
-  /// Initialize UXCam if it is allowed by RemoteConfig
-  static Future<void> tryStartUXCam() async {
-    if (_uxCamRunning || _uxCamInitializing) return;
+  /// Initialize UserX if it is allowed by RemoteConfig
+  static Future<void> tryStartUserX() async {
 
     assert(DSConstants.isInitialized);
+    assert(DSRemoteConfig.I.isInitialized);
 
     if (kDebugMode && !_debugModeSend) return;
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
 
     if (DSConstants.I.isInternalVersion) {
-      await startUXCam();
+      await startUserX();
       return;
     }
 
-    if (!DSRemoteConfig.I.isInitialized) {
-      await DSRemoteConfig.I.waitForInit();
-    }
-
-    var val = DSRemoteConfig.I.getUXCamPercent();
+    var val = DSRemoteConfig.I.getUserXPercent();
     if (val == 0) {
       await DSRemoteConfig.I.waitForFullInit(maxWait: const Duration(seconds: 20));
-      val = DSRemoteConfig.I.getUXCamPercent();
+      val = DSRemoteConfig.I.getUserXPercent();
       if (val == 0) return;
     }
-    final sessions = DSRemoteConfig.I.getUXCamSessions();
+    final sessions = DSRemoteConfig.I.getUserXSessions();
     if (sessions != 0 && sessions < DSPrefs.I.getSessionId()) {
       return;
     }
@@ -447,42 +435,30 @@ abstract class DSMetrica {
     // if yandexId is empty (or non-valid) use simple random
     final yid = int.tryParse(yandexId.let((s) => s.length >= 2 ? s.substring(s.length - 2) : s)) ?? Random().nextInt(100);
     if ((yid % 100).toInt() < val) {
-      await DSMetrica.startUXCam();
+      await DSMetrica.startUserX();
     }
   }
 
-  /// Initialize UXCam
-  static Future<void> startUXCam() async {
+  /// Initialize UserX
+  static Future<void> startUserX() async {
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
 
-    final sessions = DSRemoteConfig.I.getUXCamSessions();
+    final sessions = DSRemoteConfig.I.getUserXSessions();
     if (sessions != 0 && sessions < DSPrefs.I.getSessionId()) {
       return;
     }
 
-    if (_uxCamInitializing) return;
-    _uxCamInitializing = true;
-    try {
-      reportEvent('uxcam starting');
-      await FlutterUxcam.optIntoSchematicRecordings(); // Confirm that you have user permission for screen recording
-      final config = FlutterUxConfig(
-        userAppKey: _uxCamKey,
-        enableAutomaticScreenNameTagging: false,
-      );
-      await FlutterUxcam.startWithConfiguration(config);
-      reportEvent('uxcam started');
-      unawaited(FlutterUxcam.setUserIdentity(yandexId));
-      _uxCamRunning = true;
-    } finally {
-      _uxCamInitializing = false;
-    }
+    reportEvent('userx starting');
+    UserX.start(_userXKey);
+    UserX.setUserId(yandexId);
+    _userXRunning = true;
   }
 
-  /// Stop UXCam
-  static Future<void> stopUXCam() async {
+  /// Stop UserX
+  static Future<void> stopUserX() async {
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
-    await FlutterUxcam.stopSessionAndUploadData();
-    _uxCamRunning = false;
+    await UserX.stopScreenRecording();
+    _userXRunning = false;
   }
 
   /// Save attributes to send it in every [reportEvent]
@@ -546,49 +522,5 @@ abstract class DSMetrica {
     final key = _oncePerApplifetimeEventKey(eventName);
 
     DSPrefs.I.internal.setBool(key, true);
-  }
-}
-
-/// Trace navigation in app
-/// Based on [FlutterUxcamNavigatorObserver] of [flutter_uxcam]
-class DSNavigatorObserver extends NavigatorObserver {
-
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    super.didPush(route, previousRoute);
-
-    /// This line of code is required as there are scenarios where we have
-    /// routing like in popup menu but it is not handled by routing in
-    /// [onGenerateRoute].
-    if (route.settings.name != null) {
-      DSMetrica.reportScreenOpened(route.settings.name!);
-    }
-  }
-
-  @override
-  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
-    DSMetrica._screenNames.remove(oldRoute?.settings.name);
-    DSMetrica.reportScreenOpened(newRoute?.settings.name);
-    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
-  }
-
-  @override
-  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    DSMetrica._screenNames.remove(DSMetrica._normalizeScreenName(route.settings.name));
-    final name = DSMetrica._screenNames.isNotEmpty
-        ? DSMetrica._screenNames.last
-        : '/';
-    DSMetrica.reportScreenOpened(name);
-    super.didPop(route, previousRoute);
-  }
-
-  @override
-  void didRemove(Route route, Route? previousRoute) {
-    DSMetrica._screenNames.remove(route.settings.name);
-    final name = DSMetrica._screenNames.isNotEmpty
-        ? DSMetrica._screenNames.last
-        : '/';
-    DSMetrica.reportScreenOpened(name);
-    super.didRemove(route, previousRoute);
   }
 }
