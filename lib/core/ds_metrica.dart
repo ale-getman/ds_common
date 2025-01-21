@@ -214,7 +214,7 @@ abstract class DSMetrica {
     return await DSInternal.platform.invokeMethod('getDeviceId');
   }
 
-  /// Report event to AppMetrica and UserX (disabled in debug mode)
+  /// Report event to AppMetrica and uxcam (disabled in debug mode)
   static void reportEvent(
       String eventName, {
         bool fbSend = false,
@@ -247,7 +247,7 @@ abstract class DSMetrica {
     return res;
   }
   
-  /// Report screen change to implement Heatmaps functionality in UserX
+  /// Report screen change to implement Heatmaps functionality in uxcam
   /// It removes all chars since ? and # (keep just path without queue and anchor)
   static Future<void> reportScreenOpened(String? screenName, {Map<String, Object>? attributes}) async {
     final sn = _normalizeScreenName(screenName);
@@ -277,7 +277,7 @@ abstract class DSMetrica {
   static var _reportEventError = false;
   static var _reportEventErrorFB = false;
 
-  /// Report event to AppMetrica and UserX (disabled in debug mode)
+  /// Report event to AppMetrica and uxcam (disabled in debug mode)
   static Future<void> reportEventWithMap(
       String eventName,
       Map<String, Object>? attributes, {
@@ -529,21 +529,21 @@ abstract class DSMetrica {
     await m.AppMetrica.putErrorEnvironmentValue(key, value);
   }
 
-  static const _oncePerApplifetimePrefix = 'once_per_lifetime';
-  static String _oncePerApplifetimeEventKey(String eventName) => '${_oncePerApplifetimePrefix}_$eventName';
+  static const _oncePerAppLifetimePrefix = 'once_per_lifetime';
+  static String _oncePerAppLifetimeEventKey(String eventName) => '${_oncePerAppLifetimePrefix}_$eventName';
 
   static bool _isEventSentLegacy(String eventName) {
     return DSPrefs.I.internal.getString(_firstEventParam) == eventName;
   }
 
   static bool _isEventAlreadySendPerLifetime(String eventName) {
-    final key = _oncePerApplifetimeEventKey(eventName);
+    final key = _oncePerAppLifetimeEventKey(eventName);
 
     return _isEventSentLegacy(eventName) || (DSPrefs.I.internal.getBool(key) ?? false);
   }
 
   static void _setEventSendPerLifetime(String eventName) {
-    final key = _oncePerApplifetimeEventKey(eventName);
+    final key = _oncePerAppLifetimeEventKey(eventName);
 
     DSPrefs.I.internal.setBool(key, true);
   }
