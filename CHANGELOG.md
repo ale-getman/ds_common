@@ -1,3 +1,7 @@
+## 2.2.0
+- add FlutterUxcam.allowShortBreakForAnotherApp support longer sessions recording by UXCam
+- fix useless warning
+
 ## 2.1.1
 - add methods DSMetrica.getAmplitudeDeviceId() and DSMetrica.getAmplitudeUserId()
 
