@@ -1,3 +1,6 @@
+## 2.2.1
+- DSAppState simplification
+
 ## 2.2.0
 - add FlutterUxcam.allowShortBreakForAnotherApp support longer sessions recording by UXCam
 - fix useless warning
