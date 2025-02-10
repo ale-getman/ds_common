@@ -1,6 +1,7 @@
 export 'core/ds_constants.dart';
 export 'core/fimber/ds_fimber_service.dart';
 export 'core/fimber/ds_fimber_trees.dart';
+export 'core/ds_app_state.dart';
 export 'core/ds_ad_locker.dart';
 export 'core/ds_logging.dart';
 export 'core/ds_metrica.dart';

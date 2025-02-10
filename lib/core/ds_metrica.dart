@@ -15,6 +15,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_uxcam/flutter_uxcam.dart';
 
 import 'ds_adjust.dart';
+import 'ds_app_state.dart';
 import 'ds_constants.dart';
 import 'ds_internal.dart';
 import 'ds_logging.dart';
@@ -136,7 +137,7 @@ abstract class DSMetrica {
         break;
       case DSMetricaUserIdType.adjustId:
         break;
-      case DSMetricaUserIdType.deviceId:
+        case DSMetricaUserIdType.deviceId:
         unawaited(() async {
           final id = await getDeviceId();
           await DSMetrica.setUserProfileID(id);
@@ -463,6 +464,7 @@ abstract class DSMetrica {
     if (_uxCamInitializing) return;
     _uxCamInitializing = true;
     try {
+      assert(DSAppState.isInitialized, 'call DSAppState.preInit() before');
       reportEvent('uxcam starting');
       await FlutterUxcam.optIntoSchematicRecordings(); // Confirm that you have user permission for screen recording
       final config = FlutterUxConfig(
@@ -471,6 +473,19 @@ abstract class DSMetrica {
       );
       await FlutterUxcam.startWithConfiguration(config);
       reportEvent('uxcam started');
+
+      DSAppState.registerStateCallback((old, state) async {
+        switch (state) {
+          case AppLifecycleState.resumed:
+            await FlutterUxcam.allowShortBreakForAnotherApp(false);
+            break;
+          case AppLifecycleState.hidden:
+            await FlutterUxcam.allowShortBreakForAnotherApp(true);
+            break;
+          default:
+        }
+      });
+
       unawaited(FlutterUxcam.setUserIdentity(yandexId));
       _uxCamRunning = true;
     } finally {
