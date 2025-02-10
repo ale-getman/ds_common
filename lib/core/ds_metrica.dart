@@ -137,6 +137,7 @@ abstract class DSMetrica {
         break;
       case DSMetricaUserIdType.adjustId:
         break;
+        // ignore: deprecated_member_use_from_same_package
         case DSMetricaUserIdType.deviceId:
         unawaited(() async {
           final id = await getDeviceId();
