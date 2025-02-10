@@ -1,3 +1,4 @@
+import 'package:ds_common/core/ds_metrica.dart';
 import 'package:flutter/widgets.dart';
 
 import 'fimber/ds_fimber_base.dart';
@@ -15,8 +16,8 @@ abstract class DSAppState {
   /// App is in foreground
   static bool get isInForeground => _widgetsObserver!.appLifecycleState! == AppLifecycleState.resumed;
 
-  /// Must be called before create application
-  static void preInit() {
+  /// Dont call it directly if you call [DSMetrica.init]
+  static void internalInit() {
     if (isInitialized) {
       Fimber.w('Recall preInit is not needed', stacktrace: StackTrace.current);
       return;

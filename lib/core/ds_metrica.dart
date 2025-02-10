@@ -100,6 +100,8 @@ abstract class DSMetrica {
       return;
     }
 
+    DSAppState.internalInit();
+
     _uxCamKey = uxCamKey;
     _amplitudeKey = amplitudeKey;
     _debugModeSend = debugModeSend;
