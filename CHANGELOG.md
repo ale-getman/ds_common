@@ -1,3 +1,6 @@
+## 2.3.2
+- fix UserX bug: no suitable method found for init(String)
+
 ## 2.3.1
 - add flag DSCrashReportingTree.sendErrorsToAmpltude (false by default)
 
