@@ -1,3 +1,6 @@
+## 2.3.1
+- add flag DSCrashReportingTree.sendErrorsToAmpltude (false by default)
+
 ## 2.3.0
 - temporary restore UserX support (UserX version updated)
 
