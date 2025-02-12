@@ -52,6 +52,9 @@ class DSCrashReportingTree extends LogTree {
   /// Errors will be skipped if description and stack are same as one of [skipCloneErrors] last errors
   static var skipCloneErrors = 0;
 
+  /// [sendErrorsToAmpltude] flag to send [logLevels] events to Amplitude
+  static var sendErrorsToAmpltude = false;
+
   /// Only Log Warnings and Exceptions
   static const defaultLevels = <String>['W', 'E'];
 
@@ -107,11 +110,14 @@ class DSCrashReportingTree extends LogTree {
         deep: 4,
       );
       final Map<String, String> additionalAttributes = attributes?.map((key, v) => MapEntry(key, v.toString())) ?? {};
-      DSMetrica.reportEvent('[$level] $message', attributes: {
-        'error_priority': _priorities[level] ?? 0,
-        'stack': '$limStack',
-        ...additionalAttributes,
-      });
+      DSMetrica.reportEvent(
+          '[$level] $message',
+          amplitudeSend: sendErrorsToAmpltude,
+          attributes: {
+            'error_priority': _priorities[level] ?? 0,
+            'stack': '$limStack',
+            ...additionalAttributes,
+          });
     }
   }
 }
