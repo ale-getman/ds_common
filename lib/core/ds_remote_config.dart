@@ -3,11 +3,12 @@ import 'dart:ui';
 
 import 'package:ds_common/core/fimber/ds_fimber_base.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart';
 
 import 'ds_constants.dart';
 import 'ds_metrica.dart';
 
-class DSRemoteConfig {
+class DSRemoteConfig extends ChangeNotifier {
   final _remoteConfig = FirebaseRemoteConfig.instance;
 
   var _isInitialized = false;
@@ -46,6 +47,7 @@ class DSRemoteConfig {
         attributes: _remoteConfig.getAll().map((key, value) => MapEntry('prestate_$key', value.asString())),
       );
       _isInitialized = true;
+      notifyListeners();
       onInitialized?.call();
 
       try {
@@ -64,6 +66,7 @@ class DSRemoteConfig {
       attrs['remote_config_loaded'] = _isFullyInitialized;
       DSMetrica.reportEvent('remote config loaded', attributes: attrs);
       _isInitDone = true;
+      notifyListeners();
       onLoaded?.call();
     } ());
   }
