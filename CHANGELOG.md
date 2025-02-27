@@ -1,3 +1,6 @@
+## 2.3.4
+- add ChangeNotifier implementation to DSRemoteConfig
+
 ## 2.3.3
 - remove UserX support
 
