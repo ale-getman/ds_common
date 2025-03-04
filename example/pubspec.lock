@@ -13,18 +13,18 @@ packages:
     dependency: transitive
     description:
       name: adjust_sdk
-      sha256: cf21164bc68aec31342f8fb4a136f704e021db5db609f0497ebc6dc81bd2949b
+      sha256: "1618a1166a18ef0e45ea4f2d043b9f9ff58d30e4aa8d51a5f9404308b0faa782"
       url: "https://pub.dev"
     source: hosted
-    version: "5.0.4"
+    version: "5.1.0"
   amplitude_flutter:
     dependency: transitive
     description:
       name: amplitude_flutter
-      sha256: "96570bb256fd17185b705230bcc1507690ad9d36ca348abe4bf28541315fb067"
+      sha256: ced3315f75f084c39c5f11c409055ad3cf26e53e74dd016606a9624350bceb95
       url: "https://pub.dev"
     source: hosted
-    version: "3.16.6"
+    version: "3.16.7"
   appmetrica_plugin:
     dependency: transitive
     description:
@@ -143,7 +143,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.3.3"
+    version: "2.3.5"
   fake_async:
     dependency: transitive
     description:

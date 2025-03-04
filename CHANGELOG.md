@@ -1,3 +1,9 @@
+## 2.3.5
+- add events sending support for Adjust
+- fix DSReferrer for iOS if iosRegion value is empty
+- update adjust_sdk to 5.1.0
+- update flutter_uxcam to 2.5.8
+
 ## 2.3.4
 - add ChangeNotifier implementation to DSRemoteConfig
 
