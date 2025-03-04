@@ -218,9 +218,11 @@ abstract class DSMetrica {
   }
 
   /// Report event to AppMetrica and uxcam (disabled in debug mode)
+  /// [adjustSend] send just a eventName. If you need send extra use [DSAdjust.trackEvent]
   static void reportEvent(
       String eventName, {
         bool fbSend = false,
+        bool adjustSend = false,
         bool amplitudeSend = true,
         Map<String, Object>? attributes,
         Map<String, Object>? fbAttributes,
@@ -231,6 +233,7 @@ abstract class DSMetrica {
         eventName,
         attributes,
         fbSend: fbSend,
+        adjustSend: adjustSend,
         amplitudeSend: amplitudeSend,
         fbAttributes: fbAttributes,
         stackSkip: stackSkip + 1,
@@ -281,10 +284,12 @@ abstract class DSMetrica {
   static var _reportEventErrorFB = false;
 
   /// Report event to AppMetrica and uxcam (disabled in debug mode)
+  /// [adjustSend] send just a eventName. If you need send extra use [DSAdjust.trackEvent]
   static Future<void> reportEventWithMap(
       String eventName,
       Map<String, Object>? attributes, {
         bool fbSend = false,
+        bool adjustSend = false,
         bool amplitudeSend = true,
         Map<String, Object>? fbAttributes,
         int stackSkip = 1,
@@ -386,6 +391,12 @@ abstract class DSMetrica {
       }
       if (amplitudeSend && _amplitudeKey.isNotEmpty) {
         unawaited(_amplitude.logEvent(eventName, eventProperties: attrs));
+      }
+      if (adjustSend) {
+        unawaited(() async {
+          final event = DSAdjustEvent(eventName);
+          DSAdjust.trackEvent(event);
+        } ());
       }
       await m.AppMetrica.reportEventWithMap(eventName, attrs);
 

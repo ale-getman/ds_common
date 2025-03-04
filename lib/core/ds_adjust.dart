@@ -5,6 +5,7 @@ import 'package:adjust_sdk/adjust.dart';
 import 'package:adjust_sdk/adjust_ad_revenue.dart';
 import 'package:adjust_sdk/adjust_attribution.dart';
 import 'package:adjust_sdk/adjust_config.dart';
+import 'package:adjust_sdk/adjust_event.dart';
 import 'package:ds_common/core/fimber/ds_fimber_base.dart';
 import 'package:flutter/foundation.dart';
 
@@ -14,6 +15,7 @@ import 'ds_primitives.dart';
 
 typedef DSAdjustAttribution = AdjustAttribution;
 typedef DSAttributionCallback = void Function(DSAdjustAttribution data);
+typedef DSAdjustEvent = AdjustEvent;
 
 abstract class DSAdjust {
   static var _isInitialized = false;
@@ -130,6 +132,10 @@ abstract class DSAdjust {
   /// Remove handler for Adjust -> attributionCallback
   static void unregisterAttributionCallback(DSAttributionCallback callback) {
     _attributionCallbacks.remove(callback);
+  }
+
+  static void trackEvent(DSAdjustEvent event) {
+    Adjust.trackEvent(event);
   }
 
   static void _setAdjustAttribution(AdjustAttribution data) {
