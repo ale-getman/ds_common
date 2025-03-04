@@ -56,29 +56,32 @@ class DSReferrer {
         }
 
         if (referrer.isEmpty && Platform.isIOS) {
-          assert(iosRegion.isNotEmpty, 'iosRegion should be assigned (get_referrer cloud function must be deployed)');
-          // Get iOS referrer
-          var referrer = 'null';
-          try {
-            final startTime = DateTime.timestamp();
-            final res = await FirebaseFunctions.instanceFor(region: iosRegion).httpsCallable('get_referrer').call<
-                String>();
-            referrer = res.data;
-            final loadTime = DateTime.timestamp().difference(startTime);
-            DSMetrica.reportEvent('ios_referrer', attributes: {
-              'value': referrer,
-              'referrer_load_seconds': loadTime.inSeconds,
-              'referrer_load_milliseconds': loadTime.inMilliseconds,
-            });
-            final p = referrer.indexOf('?');
-            if (p >= 0) {
-              referrer = referrer.substring(p + 1);
+          if (iosRegion.isNotEmpty) {
+            // Get iOS referrer
+            var referrer = 'null';
+            try {
+              final startTime = DateTime.timestamp();
+              final res = await FirebaseFunctions.instanceFor(region: iosRegion).httpsCallable('get_referrer').call<
+                  String>();
+              referrer = res.data;
+              final loadTime = DateTime.timestamp().difference(startTime);
+              DSMetrica.reportEvent('ios_referrer', attributes: {
+                'value': referrer,
+                'referrer_load_seconds': loadTime.inSeconds,
+                'referrer_load_milliseconds': loadTime.inMilliseconds,
+              });
+              final p = referrer.indexOf('?');
+              if (p >= 0) {
+                referrer = referrer.substring(p + 1);
+              }
+            } catch (e, stack) {
+              Fimber.e('ios_referrer $e', stacktrace: stack);
+              referrer = 'err';
             }
-          } catch (e, stack) {
-            Fimber.e('ios_referrer $e', stacktrace: stack);
-            referrer = 'err';
+            await prefs.setString(_referrerKey, referrer);
           }
-          await prefs.setString(_referrerKey, referrer);
+        } else {
+          assert(false, 'iosRegion should be assigned (get_referrer cloud function must be deployed)');
         }
 
         Fimber.i('ds_referrer=$referrer');
