@@ -79,9 +79,9 @@ class DSReferrer {
               referrer = 'err';
             }
             await prefs.setString(_referrerKey, referrer);
+          } else {
+            assert(false, 'iosRegion should be assigned (get_referrer cloud function must be deployed)');
           }
-        } else {
-          assert(false, 'iosRegion should be assigned (get_referrer cloud function must be deployed)');
         }
 
         Fimber.i('ds_referrer=$referrer');
