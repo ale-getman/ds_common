@@ -1,3 +1,6 @@
+## 2.3.7
+- fix false positive assert
+
 ## 2.3.6
 - add uxcam_min_build parameter
 
