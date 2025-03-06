@@ -68,4 +68,30 @@ class DSConstants {
   bool get isProductionVersion => !isInternalVersion;
 
   late final PackageInfo packageInfo;
+
+  int? _buildNumber;
+
+  int get buildNumber {
+    if (!isInitialized) {
+      const err = 'Wait for initialization DSConstants firstly';
+      assert(false, err);
+      Fimber.e(err, stacktrace: StackTrace.current);
+      return 0;
+    }
+
+    if (_buildNumber != null) return _buildNumber!;
+
+    final build = int.tryParse(packageInfo.buildNumber);
+    if (build == null || packageInfo.buildNumber != build.toString()) {
+      const err = 'Failed to parse build';
+      assert(false, err);
+      Fimber.e(err, stacktrace: StackTrace.current, attributes: {
+        'build_num': packageInfo.buildNumber,
+      });
+      _buildNumber = 0;
+    } else {
+      _buildNumber = build;
+    }
+    return _buildNumber!;
+  }
 }

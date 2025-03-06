@@ -57,7 +57,6 @@ abstract class DSMetrica {
   /// current one.
   static final _screenNames = <String>[];
 
-
   static final _persistentAttrs = <String, Object>{};
   static DSMetricaAttrsCallback? _attrsHandlerOld;
   static final  _attrsHandlers = <DSMetricaAttrsCallback>{};
@@ -457,6 +456,12 @@ abstract class DSMetrica {
     if (sessions != 0 && sessions < DSPrefs.I.getSessionId()) {
       return;
     }
+    final minBuild = DSRemoteConfig.I.getUXCamMinBuild();
+    if (minBuild > 0) {
+      await DSConstants.I.waitForInit();
+      final build = DSConstants.I.buildNumber;
+      if (minBuild > build) return;
+    }
 
     // if yandexId is empty (or non-valid) use simple random
     final yid = int.tryParse(yandexId.let((s) => s.length >= 2 ? s.substring(s.length - 2) : s)) ?? Random().nextInt(100);
@@ -468,11 +473,6 @@ abstract class DSMetrica {
   /// Initialize UXCam
   static Future<void> startUXCam() async {
     if (kIsWeb || !Platform.isAndroid && !Platform.isIOS) return;
-
-    final sessions = DSRemoteConfig.I.getUXCamSessions();
-    if (sessions != 0 && sessions < DSPrefs.I.getSessionId()) {
-      return;
-    }
 
     if (_uxCamInitializing) return;
     _uxCamInitializing = true;

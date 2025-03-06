@@ -152,6 +152,7 @@ class DSRemoteConfig extends ChangeNotifier {
 
   int getUXCamPercent() => getInt('uxcam_percent', defVal: getUserXPercent());
   int getUXCamSessions() => getInt('uxcam_sessions', defVal: getUserXSessions());
+  int getUXCamMinBuild() => getInt('uxcam_min_build', defVal: 0);
 
   /// Will be removed in future versions. Use uxcam_percent
   int getUserXPercent() => getInt('userx_percent');
