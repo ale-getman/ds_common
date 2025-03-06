@@ -1,3 +1,6 @@
+## 2.3.6
+- add uxcam_min_build parameter
+
 ## 2.3.5
 - add events sending support for Adjust
 - fix DSReferrer for iOS if iosRegion value is empty
