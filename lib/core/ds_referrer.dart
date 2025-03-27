@@ -30,6 +30,12 @@ class DSReferrer {
 
   final _changedCallbacks = <DSReferrerCallback>{};
 
+  /// Call this method is you don't need referrer in your app
+  void noReferrer() {
+    assert(!_isInitialized, 'Duplicate initialization');
+    _isInitialized = true;
+  }
+
   /// Call this method at the start of app
   Future<void> trySave({
     String iosRegion = '',
