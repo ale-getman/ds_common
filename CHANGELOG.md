@@ -1,3 +1,7 @@
+## 2.3.9
+- add DSReferrer.I.noReferrer()
+- rename session_start_sec -> since_app_start_sec
+
 ## 2.3.8
 - add session_start_sec attribute to every event (seconds since session start)
 - add DSConstants.startTime property
