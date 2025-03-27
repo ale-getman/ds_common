@@ -337,6 +337,7 @@ abstract class DSMetrica {
 
       baseAttrs['session_id'] = sessionId;
       baseAttrs['event_id'] = _eventId;
+      baseAttrs['session_start_sec'] = DateTime.timestamp().difference(DSConstants.startTime).inSeconds;
       baseAttrs['user_time'] = DateTime.now().toIso8601String();
 
       final Map<String, Object> attrs;

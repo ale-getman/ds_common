@@ -16,6 +16,8 @@ class DSConstants {
     return _instance!;
   }
 
+  static final startTime = DateTime.timestamp();
+
   @protected
   @mustCallSuper
   Future<void> internalInit() async {
