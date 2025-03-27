@@ -1,3 +1,7 @@
+## 2.3.8
+- add session_start_sec attribute to every event (seconds since session start)
+- add DSConstants.startTime property
+
 ## 2.3.7
 - fix false positive assert
 
