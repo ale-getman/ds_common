@@ -1,3 +1,6 @@
+## 2.4.0
+- add universal fb_referrer support for DSReferrer
+
 ## 2.3.9
 - add DSReferrer.I.noReferrer()
 - rename session_start_sec -> since_app_start_sec
