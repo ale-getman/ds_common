@@ -74,7 +74,7 @@ class DSReferrer {
         if (referrer.isEmpty && (Platform.isIOS || forceFBReferrer)) {
           if (region.isNotEmpty || fbV2Url.isNotEmpty) {
             // Get referrer
-            var referrer = 'null';
+            referrer = 'null';
             try {
               final startTime = DateTime.timestamp();
               final int respCode;
