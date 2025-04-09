@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:ds_common/core/fimber/ds_fimber_base.dart';
 import 'package:firebase_app_installations/firebase_app_installations.dart';
+import 'package:http/http.dart' as http;
 
 import 'ds_constants.dart';
 import 'ds_internal.dart';
@@ -38,10 +39,20 @@ class DSReferrer {
 
   /// Call this method at the start of app
   Future<void> trySave({
-    String iosRegion = '',
+    @Deprecated('use fbRegion')
+    final String iosRegion = '',
+    final String fbV1Region = '',
+    final String fbV2Url = '',
+    final bool forceFBReferrer = false,
     Map<String, Object> Function(Map<String, String> fields)? installParamsExtra,
   }) async {
     assert(!_isInitialized, 'Duplicate trySave call not needed');
+    var params = 0;
+    if (iosRegion.isNotEmpty) params++;
+    if (fbV1Region.isNotEmpty) params++;
+    if (fbV2Url.isNotEmpty) params++;
+    assert(params <= 1, 'Use fbV1Region or fbV2Url parameter only');
+    final region = fbV1Region.isEmpty ? iosRegion : fbV1Region;
     _isInitialized = true;
 
     try {
@@ -49,7 +60,7 @@ class DSReferrer {
 
       var referrer = prefs.getString(_referrerKey) ?? '';
       try {
-        if (referrer.isEmpty && Platform.isAndroid) {
+        if (!forceFBReferrer && referrer.isEmpty && Platform.isAndroid) {
           // Get Android referrer
           try {
             referrer = await DSInternal.platform.invokeMethod('fetchInstallReferrer');
@@ -57,22 +68,33 @@ class DSReferrer {
             Fimber.e('$e', stacktrace: stack);
             return;
           }
-          if (referrer == 'null') return;
           await prefs.setString(_referrerKey, referrer);
         }
 
-        if (referrer.isEmpty && Platform.isIOS) {
-          if (iosRegion.isNotEmpty) {
-            // Get iOS referrer
+        if (referrer.isEmpty && (Platform.isIOS || forceFBReferrer)) {
+          if (region.isNotEmpty || fbV2Url.isNotEmpty) {
+            // Get referrer
             var referrer = 'null';
             try {
               final startTime = DateTime.timestamp();
-              final res = await FirebaseFunctions.instanceFor(region: iosRegion).httpsCallable('get_referrer').call<
-                  String>();
-              referrer = res.data;
+              final int respCode;
+              if (fbV2Url.isEmpty) {
+                final res = await FirebaseFunctions.instanceFor(region: region).httpsCallable('get_referrer').call<String>();
+                respCode = 200;
+                referrer = res.data;
+              } else {
+                final res = await http.get(
+                  Uri.parse(fbV2Url),
+                );
+                respCode = res.statusCode;
+                if (respCode == 200) {
+                  referrer = res.body;
+                }
+              }
               final loadTime = DateTime.timestamp().difference(startTime);
-              DSMetrica.reportEvent('ios_referrer', attributes: {
+              DSMetrica.reportEvent('fb_referrer', attributes: {
                 'value': referrer,
+                'resp_code': respCode,
                 'referrer_load_seconds': loadTime.inSeconds,
                 'referrer_load_milliseconds': loadTime.inMilliseconds,
               });
@@ -81,12 +103,12 @@ class DSReferrer {
                 referrer = referrer.substring(p + 1);
               }
             } catch (e, stack) {
-              Fimber.e('ios_referrer $e', stacktrace: stack);
+              Fimber.e('fb_referrer $e', stacktrace: stack);
               referrer = 'err';
             }
             await prefs.setString(_referrerKey, referrer);
           } else {
-            assert(false, 'iosRegion should be assigned (get_referrer cloud function must be deployed)');
+            assert(false, 'fbRegion should be assigned (get_referrer cloud function must be deployed)');
           }
         }
 
